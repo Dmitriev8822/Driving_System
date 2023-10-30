@@ -58,3 +58,25 @@ def user_authorization(login, password):
 def user_logout():
     logout_user()
     return 0  # all right
+
+
+def users_data():
+    res = [[str(user.id), str(user.login)] for user in User.query.filter_by(user_type='instructor').all()]
+    return res
+
+
+def create_users(num):
+    cnt = 1
+    for i in range(num):
+        login = 'user' + str(cnt)
+        cnt += 1
+        res = -1
+        while res != 0:
+            res = user_registration(login=login, password='1234', user_type='instructor')
+
+
+def delete_users():
+    users = [user.id for user in User.query.all()]
+    for id in users:
+        User.query.filter_by(id=id).delete()
+        db.session.commit()

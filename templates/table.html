@@ -9,22 +9,6 @@
 	<title>Users</title>
 </head>
 <body>
-	<div class="main">
-		{% with messages = get_flashed_messages() %}
-			   {% if messages %}
-			      {% for message in messages %}
-			         {{ message }}
-			      {% endfor %}
-			   {% endif %}
-			{% endwith %}
-		<form method="POST" class="form">
-
-			<label for="user_id">User id</label>
-			<input type="text" name="user_id">
-
-			<button>Delete</button>
-		</form>
-	</div>
 	<table class="table">
 		<tr>
 			<th>ID</th>
@@ -32,11 +16,16 @@
 		</tr>
 		{% for row in data %}
 		<tr>
-			{% for cell in row[0:-1] %}
-			<td id="{{ cell }}">{{ cell }}</td>
+			{% for date in row %}
+			<td>{{ date }}</td>
 			{% endfor %}
+			<td>
+				<form action="test_funk" method="POST">
+					<button type="submit" name="submit_b" value="{{ row[0] }}" id='id'>click</button>
+				</form>
+			</td>
 		</tr>
 		{% endfor %}
 	</table>
 </body>
-</html>
+</html>	

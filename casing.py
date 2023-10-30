@@ -76,5 +76,22 @@ def mpl():
     return render_template('mpl.html')
 
 
+@app.route('/table', methods=['POST', 'GET'])
+def table():
+    res = users_data()
+    return render_template('table.html', data=res)
+
+
+@login_required
+@app.route('/test_funk', methods=['GET', 'POST'])
+def test_funk():
+    instructor_id = request.form.get('submit_b')
+    user_id = current_user.id
+    print(f'Instructor ID: {instructor_id}')
+    print(f'User ID: {user_id}')
+    return redirect('table')
+
+
 if __name__ == '__main__':
+    delete_users()
     app.run(debug=True)
