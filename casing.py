@@ -10,88 +10,95 @@ def load_user(user_id):
     return User.query.get(user_id)
 
 
-@app.route('/sign_up', methods=['GET', 'POST'])
-def sign_up():
-    login = request.form.get('login')
-    password = request.form.get('password')
-
+@app.route('/register/student', methods=['GET', 'POST'])
+def register_student():
     if request.method == 'POST':
-        if not (login and password):
-            flash('Fields must be fill')
-        else:
-            res = user_registration(login=login, password=password, user_type='student')
-            if res == 0:
-                return redirect(url_for('sign_in'))
-            elif res == 1:
-                flash('User already registered')
+        # получаем данные и записываем в базу данных
+        number = request.form.get('telnum')
+        password = request.form.get('password')
+        password_v = request.form.get('password_v')
+        if number != '' and password != '' and password_v != '':
+            if password == password_v:
+                res = user_registration(login=number, password=password, user_type='student')
+                if res == 0:
+                    # в будущем редирект в личный кабинет
+                    return redirect('/')
+                else:
+                    flash('User is already registered')
             else:
-                flash('Something went wrong')
-
-    return render_template('sign_up.html')
-
-
-@app.route('/sign_in', methods=['GET', 'POST'])
-def sign_in():
-    login = request.form.get('login')
-    password = request.form.get('password')
-
-    if request.method == 'POST':
-        if not (login and password):
-            flash('Fields must be fill.')
+                flash('Passwords don\'t match')
         else:
-            res = user_authorization(login=login, password=password)
+            flash('Fields must be filled')
+
+    # print(f'number: {number};\npassword: {password};\npassword_v: {password_v};\npassword check: {password == password_v}.')
+
+    return render_template('student_registration.html')
+
+
+@app.route('/register/instructor', methods=['GET', 'POST'])
+def register_instructor():
+    if request.method == 'POST':
+        # получаем данные и записываем в базу данных
+        number = request.form.get('telnum')
+        password = request.form.get('password')
+        password_v = request.form.get('password_v')
+
+        if number != '' and password != '' and password_v != '':
+            if password == password_v:
+                res = user_registration(login=number, password=password, user_type='instructor')
+                if res == 0:
+                    # в будущем редирект в личный кабинет
+                    return redirect('/')
+                else:
+                    flash('User is already registered')
+            else:
+                flash('Passwords don\'t match')
+        else:
+            flash('Fields must be filled')
+
+    # print(f'number: {number};\npassword: {password};\npassword_v: {password_v};\npassword check: {password == password_v}.')
+
+    return render_template('instructor_registration.html')
+
+
+@app.route('/authorization', methods=['GET', 'POST'])
+def authorization():
+    if request.method == 'POST':
+        # получаем данные и проверяем
+        number = request.form.get('telnum')
+        password = request.form.get('password')
+
+        if number != '' and password != '':
+            res = user_authorization(login=number, password=password)
             if res == 0:
-                return redirect(url_for('mpl'))
-            elif res == 1:
-                flash('User not found.')
+                # в будущем редирект в личный кабинет
+                return redirect('/')
             elif res == 2:
-                flash('Password incorrect')
+                flash('Password is incorrect')
+            elif res == 1:
+                flash('User not detected')
+            else:
+                flash('Unknown error')
+        else:
+            flash('Fields must be filled')
 
-    return render_template('sign_in.html')
+    return render_template('login.html')
 
 
-@app.route('/logout', methods=['GET', 'POST'])
-@login_required
-def user_logout():
-    logout_user()
-    return redirect('mp')
-
-
-@app.after_request
-def redirect_sing_in(response):
-    if response.status_code == 401:
-        return redirect('sign_in')
-    return response
+@app.route('/swap')
+def swap():
+    return render_template('swap.html')
 
 
 @app.route('/')
-@app.route('/mp')
-def mp():
-    return render_template('mp.html')
-
-
-@app.route('/mpl')
-@login_required
-def mpl():
-    return render_template('mpl.html')
-
-
-@app.route('/table', methods=['POST', 'GET'])
-def table():
-    res = users_data()
-    return render_template('table.html', data=res)
-
-
-@login_required
-@app.route('/test_funk', methods=['GET', 'POST'])
-def test_funk():
-    instructor_id = request.form.get('submit_b')
-    user_id = current_user.id
-    print(f'Instructor ID: {instructor_id}')
-    print(f'User ID: {user_id}')
-    return redirect('table')
+@app.route('/index')
+def index():
+    if current_user.is_authenticated:
+        login = current_user.login
+        return render_template('index.html', login=login)
+    else:
+        return render_template('index.html')
 
 
 if __name__ == '__main__':
-    delete_users()
     app.run(debug=True)
