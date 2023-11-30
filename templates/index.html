@@ -28,7 +28,9 @@
     					<a class="soc__img"href="">
                             <img src="..\static\img\wa.png" alt="">
                         </a>
-                        <a href="#">{{ login }}</a>
+                        {% if login %}
+                            <img src="{{ photo }}" alt="My Image" height="50px" width="50px">
+                        {% endif %}
     				</div>
     			</div>
     		</div>

@@ -15,6 +15,7 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(255), nullable=True, unique=False)
     second_name = db.Column(db.String(255), nullable=True, unique=False)
     father_name = db.Column(db.String(255), nullable=True, unique=False)
+    description = db.Column(db.TEXT(1010), nullable=True, unique=False)
 
 
 class Lesson(db.Model):
@@ -25,11 +26,11 @@ class Lesson(db.Model):
     instructor_id = db.Column(db.String(128), nullable=False, unique=False)
 
 
-def user_registration(login, password, user_type, name=None, second_name=None, father_name=None):
+def user_registration(login, password, user_type, name=None, second_name=None, father_name=None, description=None):
     res = User.query.filter_by(login=login).first()
     if res is None:
         user = User(login=login, password=password, user_type=user_type, \
-                    name=name, second_name=second_name, father_name=father_name)
+                    name=name, second_name=second_name, father_name=father_name, description=description)
         try:
             db.session.add(user)
             db.session.commit()
@@ -60,23 +61,39 @@ def user_logout():
     return 0  # all right
 
 
-def users_data():
-    res = [[str(user.id), str(user.login)] for user in User.query.filter_by(user_type='instructor').all()]
-    return res
-
-
-def create_users(num):
-    cnt = 1
-    for i in range(num):
-        login = 'user' + str(cnt)
-        cnt += 1
-        res = -1
-        while res != 0:
-            res = user_registration(login=login, password='1234', user_type='instructor')
-
-
 def delete_users():
     users = [user.id for user in User.query.all()]
     for id in users:
         User.query.filter_by(id=id).delete()
         db.session.commit()
+
+
+def update_user_info(user_id, login=None, password=None, user_type=None, name=None, second_name=None, father_name=None,
+                     description=None):
+    user = User.query.get(user_id)
+
+    if login is not None:
+        user.login = login
+    if password is not None:
+        user.password = password
+    if user_type is not None:
+        user.user_type = user_type
+    if name is not None:
+        user.name = name
+    if second_name is not None:
+        user.second_name = second_name
+    if father_name is not None:
+        user.father_name = father_name
+    if description is not None:
+        user.description = description
+
+    db.session.commit()
+
+# def create_users(num):
+#     cnt = 1
+#     for i in range(num):
+#         login = 'user' + str(cnt)
+#         cnt += 1
+#         res = -1
+#         while res != 0:
+#             res = user_registration(login=login, password='1234', user_type='instructor')
