@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="..\static\css\sur_style1.css">
+        <link rel="stylesheet" href="..\static\fonts">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Анкета</title>
+
+    </head>
+    <body>
+    	<div class="header">
+    		<div class="container">
+    			<div class="header_inner">
+    				<div class="header_logo_text">Driving System</div>
+    				<div class="soc">
+    					<a class="soc__img"href="">
+                            <img src="..\static\img\vk.png" alt="">
+                        </a>
+    					<a class="soc__img"href="">
+                            <img src="..\static\img\tg.png" alt="">
+                        </a>
+    					<a class="soc__img"href="">
+                            <img src="..\static\img\wa.png" alt="">
+                        </a>
+    				</div>
+    			</div>
+    		</div>
+    	</div>
+
+        <div class="survey">
+            <div class="container">
+                <div class="sur__inner">
+                    <div class="sur__profile">
+                        <img src="{{ main_photo }}" alt="">
+                        <div class="pro__info">
+                            <div>
+                                <label>ИНД. КОД:</label>
+                                <input class="input" type="text" maxlength="50" placeholder=" ____________" value="{{ user_id }}" readonly>
+                            </div>
+                            <div>
+                                <label>ИМЯ:</label>
+                                <input class="input" type="text" maxlength="50" placeholder=" ____________" value="{{ name }}" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sur__data">
+                        <form action="/account/student" method="POST" enctype="multipart/form-data">
+                            <div class="suptitle">АНКЕТА</div>
+                            <div>
+                                <label>ФИО:</label>
+                                <input name="fio" class="input" type="text" maxlength="50" placeholder=" _____________________________" value="{{ fio }}">
+                            </div>
+                            <div>
+                                <label>ОПИСАНИЕ ЖЕЛАЕМОГО ОБУЧЕНИЯ:</label>
+                                <textarea name="description" class="inputB" cols="67" rows="10" maxlength="1000" placeholder="______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________">{{ description }}</textarea>
+                            </div>
+                            <div>
+                                <label>ДОБАВИТЬ ФОТО ПРОФИЛЯ:</label>
+                                <input type="file" name="photo">
+                                <label class="wish">*по желанию</label>
+                            </div>
+
+                            <div class="suptitle2">
+                                <button>СОХРАНИТЬ</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
