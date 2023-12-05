@@ -2,7 +2,7 @@ from flask import request, render_template, redirect, flash, url_for
 from flask_login import login_required, logout_user, current_user
 
 import os
-from PIL import Image
+from PIL import Image, ImageDraw
 
 from main import app
 from db import *
@@ -16,6 +16,17 @@ def load_user(user_id):
     return User.query.get(user_id)
 
 
+@login_manager.unauthorized_handler
+def unauthorized():
+    return redirect(url_for("index"))
+
+
+@app.route('/logout', methods=['GET'])
+def logout():
+    user_logout()
+    return redirect('/')
+
+
 @app.route('/register/student', methods=['GET', 'POST'])
 def register_student():
     if current_user.is_authenticated:
@@ -26,11 +37,12 @@ def register_student():
         number = request.form.get('telnum')
         password = request.form.get('password')
         password_v = request.form.get('password_v')
+
         if number != '' and password != '' and password_v != '':
             if password == password_v:
                 res = user_registration(login=number, password=password, user_type='student')
                 if res == 0:
-                    return redirect('/account/student')
+                    return redirect('/authorization')
                 else:
                     flash('User is already registered')
             else:
@@ -70,6 +82,12 @@ def register_instructor():
 
 @app.route('/authorization', methods=['GET', 'POST'])
 def authorization():
+    if current_user.is_authenticated:
+        if current_user.user_type == 'student':
+            return redirect('/account/student')
+        else:
+            return redirect('/account/instructor')
+
     if request.method == 'POST':
         # получаем данные и проверяем
         number = request.form.get('telnum')
@@ -78,7 +96,10 @@ def authorization():
         if number != '' and password != '':
             res = user_authorization(login=number, password=password)
             if res == 0:
-                return redirect('/')
+                if current_user.user_type == 'student':
+                    return redirect('/account/student')
+                else:
+                    return redirect('/account/instructor')
 
             elif res == 2:
                 flash('Password is incorrect')
@@ -92,12 +113,29 @@ def authorization():
     return render_template('login.html')
 
 
-def is_profile_image(user_id, change=False):
+@app.route('/account', methods=['GET', 'POST'])
+def account():
+    if current_user.user_type == 'student':
+        return redirect('/account/student')
+    else:
+        return redirect('/account/instructor')
+
+
+def is_profile_image(user_id, change=False, path=False, round_image=False):
+    user_id = str(user_id)
     files = os.listdir(path_to_profile_images)
     for file in files:
         if user_id in file:
             if change:
-                os.remove(path_to_profile_images + f'/{file}')
+                os.remove(path_to_profile_images + f'{file}')
+                os.remove(path_to_profile_images + f'{user_id}r.png')
+
+            if path:
+                if round_image:
+                    return path_to_profile_images + user_id + 'r.' + file.split('.')[-1]
+                else:
+                    return path_to_profile_images + file
+
             return True
     return False
 
@@ -107,14 +145,18 @@ def format_profile_photo(file):
     image = Image.open(path_to_file)
     resized_image = image.resize((200, 200))
     os.remove(path_to_file)
+    path_to_file = path_to_profile_images + file.split('.')[0] + '.' + 'png'
     resized_image.save(path_to_file)
 
-    # original_image = Image.open(image_path)
-    # mask = Image.new("L", original_image.size, 0)
-    # mask.paste(255, original_image.getroundrect((0, 0) + original_image.size, radius=100))
-    # rounded_image = Image.new("RGBA", original_image.size)
-    # rounded_image.paste(original_image, mask=mask)
-    # rounded_image.save(output_path)
+    # Открываем изображение
+    image = Image.open(path_to_file)
+    image = image.resize((100, 100))
+    rounded_image = Image.new("RGBA", image.size, (255, 255, 255, 0))
+    draw = ImageDraw.Draw(rounded_image)
+    draw.ellipse([(0, 0), image.size], fill=(255, 255, 255, 255))
+    rounded_image.paste(image, (0, 0), mask=rounded_image)
+    path_to_file = path_to_profile_images + file.split('.')[0] + 'r' + '.' + 'png'
+    rounded_image.save(path_to_file)
 
 
 @app.route('/account/student', methods=['GET', 'POST'])
@@ -135,7 +177,7 @@ def student_account():
         update_user_info(str(current_user.id), description=description)
 
         if photo is not None and photo.filename != '':
-            is_profile_image(str(current_user.id), change=True)
+            is_profile_image(current_user.id, change=True)
 
             extension = photo.filename.rsplit('.')[-1].lower()
             photo.filename = f'{str(current_user.id)}.{extension}'
@@ -148,16 +190,20 @@ def student_account():
     fio = ' '.join([current_user.second_name, current_user.name,
                     current_user.father_name]) if current_user.name is not None else ''
     description = current_user.description if current_user.description is not None else ''
-    main_photo = '../' + path_to_profile_images + [name if user_id in name else '' for name in os.listdir(path_to_profile_images)][0] if current_user.is_authenticated and is_profile_image(str(current_user.id)) else '../static/img/photo_test.png'
+    main_photo = '../' + path_to_profile_images + \
+                 [name if user_id in name else '' for name in os.listdir(path_to_profile_images)][
+                     0] if current_user.is_authenticated and is_profile_image(
+        str(current_user.id)) else '../static/img/photo_test.png'
 
-    return render_template('student_account.html', fio=fio, description=description, name=name, user_id=user_id, main_photo=main_photo)
+    return render_template('student_account.html', fio=fio, description=description, name=name, user_id=user_id,
+                           main_photo=main_photo)
 
 
 @app.route('/account/instructor', methods=['GET', 'POST'])
 @login_required
 def instructor_account():
     if request.method == 'POST':
-        pass
+        fio = request.form.get('fio')
 
     return render_template('instructor_account.html')
 
@@ -167,11 +213,21 @@ def swap():
     return render_template('swap.html')
 
 
+@app.route('/test')
+def test():
+    print(1)
+    return redirect('/')
+
+
 @app.route('/')
 @app.route('/index')
 def index():
     if current_user.is_authenticated:
-        print(current_user.id)
+        # ..\static\img\user.png
+        path_image = is_profile_image(current_user.id, path=True, round_image=True) if is_profile_image(
+            current_user.id) else r'..\static\img\user.png'
+        # path_image = r'..\static\img\user.png'
+        return render_template('index.html', login=True, path_image=path_image)
     return render_template('index.html')
 
 

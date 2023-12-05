@@ -48,12 +48,16 @@
                         <form>
                             <div class="suptitle">АНКЕТА</div>
                             <div>
-                                <label>ИМЯ:</label>
-                                <input class="input" type="text" maxlength="9" placeholder=" _____________________________">
+                                <label>ФИО:</label>
+                                <input name="fio" class="input" type="text" maxlength="50" placeholder=" _____________________________" value="{{ fio }}">
                             </div>
                             <div>
                                 <label>АВТОМОБИЛЬ:</label>
-                                <input class="input" type="text" maxlength="9" placeholder="  (Марка, модель, год выпуска, кпп)">
+                                <select class="input">
+                                  <option value="Volvo">Volvo</option>
+                                  <option value="BMW">BMW</option>
+                                  <option value="Toyota">Toyota</option>
+                                </select>
                             </div>
                             <div>
                                 <label>ДОБАВИТЬ ФОТО ПРОФИЛЯ:</label>

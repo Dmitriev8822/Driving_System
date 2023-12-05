@@ -173,3 +173,37 @@ h1, h2, h3, h4, h5, h6 {
 
 	border: solid #2055E5;
 }
+
+
+
+
+.container_img {
+  position: relative;
+}
+
+.menu {
+  display: none;
+  position: absolute;
+  width: 100px;
+  background: #fff;
+}
+
+.menu ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu ul a {
+  text-decoration: none;
+  color: #000;
+}
+
+.menu li {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #000;
+  border-radius: 10px;
+  margin-bottom: 5px;
+}
