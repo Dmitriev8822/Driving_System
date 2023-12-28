@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="..\static\css\style_ser.css">
+        <link rel="stylesheet" href="..\static\fonts">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Анкета</title>
+    </head>
+    <body>
+        <div class="header">
+            <div class="container">
+                <div class="header_inner">        
+                    <div class="header_logo_text">Driving System</div>
+                    <div class="soc">
+                        <a class="soc__img"href="">
+                            <img src="..\static\img\vk.png" alt="">
+                        </a>
+                        <a class="soc__img"href="">
+                            <img src="..\static\img\tg.png" alt="">
+                        </a>
+                        <a class="soc__img"href="">
+                            <img src="..\static\img\wa.png" alt="">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="search">
+            <div class="container">
+                <div class="ser__inner">
+                    <label>поиск:</label>
+                    <input class="in__ser" type="text">
+                    <input class="ser__ser" type="image" src="..\static\img\ser.png">
+                    <input class="ser__ser" type="image" src="..\static\img\opt.png">
+                </div>
+            </div>
+        </div>
+
+        <div class="list">
+            <div class="container">
+                {% for user in users %}
+                    <div class="list__inner">
+                        <img class="imgh" src="..\static\img\photo.png" alt="">
+                        <div class="data">
+                            <div>
+                                <label class="label" for="">фио:</label>
+                                <input class="text" type="text" value="{{ user[0] }}" readonly>
+                            </div>
+                            <div>
+                                <label class="label" for="">авто, стаж:</label>
+                                <input class="text" type="text" value="{{ user[1] }}" readonly>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </body>
+</html>

@@ -172,6 +172,12 @@ h1, h2, h3, h4, h5, h6 {
 	font-size: 30px;
 }
 
+
+.personal_car_block{
+    margin-top: -10px;
+}
+
+
 .inputB {
 	width: 100%;
 	border-radius: 10px;

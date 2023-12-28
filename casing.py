@@ -231,6 +231,12 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/search')
+def search():
+    result = get_instructors_info()
+    return render_template('search.html', users=result)
+
+
 if __name__ == '__main__':
     # delete_users()
     app.run(debug=True)

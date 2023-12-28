@@ -53,12 +53,38 @@
                             </div>
                             <div>
                                 <label>АВТОМОБИЛЬ:</label>
-                                <select class="input">
-                                  <option value="Volvo">Volvo</option>
-                                  <option value="BMW">BMW</option>
-                                  <option value="Toyota">Toyota</option>
+                                <select onchange="addCustomOption()" id="select" class="input">
+                                    <option value="Volvo">Volvo</option>
+                                    <option value="BMW">BMW</option>
+                                    <option value="Toyota">Toyota</option>
+                                    <option value="Other">Другое</option>
                                 </select>
                             </div>
+                            <div style="display:none" class="personal_car_block">
+                                <label>ВВЕДИТЕ МОДЕЛЬ И НАЗВАНИЕ:</label>
+                                <input name="personal_car" class="input" type="text" maxlength="50" placeholder=" _____________________________">
+                            </div>
+
+                            <script>
+                                function addCustomOption() {
+                                    var selectElement = document.getElementById("select");
+                                    var otherOption = document.querySelector('option[value="Other"]');
+                                    const block = document.querySelector('.personal_car_block');
+
+                                    if (selectElement.selectedIndex === otherOption.index) {
+
+                                        block.style.display = 'block';
+
+                                        // console.log("Выбрано поле 'Другое'");
+                                    } else {
+
+                                        block.style.display = 'none';
+
+                                        // console.log("Выбрана другая опция");
+                                    }
+                                }
+                            </script>
+
                             <div>
                                 <label>ДОБАВИТЬ ФОТО ПРОФИЛЯ:</label>
                                 <input type="file">
