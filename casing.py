@@ -8,7 +8,7 @@ from main import app
 from db import *
 
 app.config['SESSION_COOKIE_SECURE'] = True
-path_to_profile_images = 'static/img/profile/'
+path_to_profile_images = os.path.join('static', 'img', 'profile')
 
 
 @login_manager.user_loader
@@ -213,12 +213,6 @@ def swap():
     return render_template('swap.html')
 
 
-@app.route('/test')
-def test():
-    print(1)
-    return redirect('/')
-
-
 @app.route('/')
 @app.route('/index')
 def index():
@@ -235,6 +229,14 @@ def index():
 def search():
     result = get_instructors_info()
     return render_template('search.html', users=result)
+
+
+@app.route('/calendar')
+def calendar():
+    dt = datetime(year=2024, month=2, day=1)
+    dt7 = dt + timedelta(days=7)
+    times = get_info_user_calendar(current_user.id, dt, dt7)
+    return render_template('data.html', times=times)
 
 
 if __name__ == '__main__':

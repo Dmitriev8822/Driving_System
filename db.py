@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from main import app
 
@@ -19,21 +19,28 @@ class User(db.Model, UserMixin):
     father_name = db.Column(db.String(255), nullable=True, unique=False)
     description = db.Column(db.TEXT(1010), nullable=True, unique=False)
 
+    # id_user || login || password || user_type || name || second_name || father_name || description
+
 
 class Lesson(db.Model):
-    id = db.Column(db.Integer, primary_key=True, unique=False, autoincrement=True)
-    data = db.Column(db.String(128), nullable=False, unique=False)
-    status = db.Column(db.String(128), nullable=False, unique=False)
+    id_lesson = db.Column(db.Integer, primary_key=True, unique=False, autoincrement=True)
+    date = db.Column(db.DateTime, nullable=False, unique=True)
+    duration = db.Column(db.Integer, nullable=False, unique=False)
+    status = db.Column(db.String(128), nullable=False, unique=False)  # free || during || busy || entry
     student_id = db.Column(db.String(128), nullable=False, unique=False)
     instructor_id = db.Column(db.String(128), nullable=False, unique=False)
 
+    # id_lesson || date || duration || status || student_id || instructor_id
+
 
 class Cars(db.Model):
-    id = db.Column(db.Integer, primary_key=True, unique=False, autoincrement=True)
+    id_car = db.Column(db.Integer, primary_key=True, unique=False, autoincrement=True)
     make = db.Column(db.String(128), nullable=False, unique=False)
     model = db.Column(db.String(128), nullable=False, unique=False)
     transmission = db.Column(db.String(128), nullable=False, unique=False)
     date_release = db.Column(db.String(128), nullable=False, unique=False)
+
+    # id_car || make || model || transmission || date_release
 
 
 def user_registration(login, password, user_type, name=None, second_name=None, father_name=None, description=None):
@@ -72,7 +79,7 @@ def user_logout():
 
 
 def delete_users():
-    users = [user.id for user in User.query.all()]
+    users = [user.id_user for user in User.query.all()]
     for id in users:
         User.query.filter_by(id=id).delete()
         db.session.commit()
@@ -133,6 +140,70 @@ def add_car_to_cars_list(car):
         db.session.commit()
 
 
+def get_info_user_calendar(user_id, date_from, date_to):
+    user_id = str(user_id)
+    date = date_from
+    results = list()
+    while date < date_to:
+        times = ['7:00', '7:30', '8:00', '8:30', '9:00', '9:30', '10:00', '10:30', '11:00', '11:30',
+                 '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
+                 '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30']
+
+        lessons = [f'{lesson.date.hour}:{lesson.date.minute:02d}' if date.year == lesson.date.year and date.month == lesson.date.month and date.day == lesson.date.day else None for lesson in Lesson.query.filter_by().all()]
+        lessons = list(filter(None, lessons))
+
+        durations = [[lesson.duration, lesson.student_id] if date.year == lesson.date.year and date.month == lesson.date.month and date.day == lesson.date.day else None for lesson in Lesson.query.filter_by().all()]
+        durations = list(filter(None, durations))
+
+        i = 0
+        result = list()
+        while i < len(times):
+            time = times[i]
+            if time in lessons:
+                employment = 'busy'
+                if durations[lessons.index(time)][1] == user_id:
+                    employment = 'entry'
+
+                counter = durations[lessons.index(time)][0]
+                for j in range(counter + 1):
+                    result.append([times[i + j], employment])
+                i += counter
+            else:
+                result.append([time, 'free'])
+            i += 1
+
+        results.append(result)
+
+        date += timedelta(days=1)
+
+    return results
+
+    # for i in range(len(times)):
+    #     el = times[i]
+    #     if el in lessons:
+    #         for j in range(len(durations[])):
+    #         result.append([el, 'busy'])
+    #     else:
+    #         result.append([el, 'free'])
+
+
 if __name__ == '__main__':
-    add_car_to_cars_list('Lada-Vesta-R-2015-pt')
+    # dt = datetime(year=2024, month=2, day=1)
+    # dt7 = dt + timedelta(days=7)
+    # times = get_info_user_calendar(1, dt, dt7)
+    # print(times)
+
+
+
+    # Lesson.query.filter_by(id_lesson=1).delete()
+    # db.session.commit()
+
+    # dt = datetime(year=2024, month=2, day=5, hour=11, minute=30)
+    # lesson = Lesson(date=dt, duration=2, status='busy', student_id=1, instructor_id=3)  # id_lesson || date || duration || status || student_id || instructor_id
+    # db.session.add(lesson)
+    # db.session.commit()
+    #
+    # user_registration(login='user1', password='123', user_type='student')  # id_user || login || password || user_type || name || second_name || father_name || description
+    # user_registration(login='user2', password='123', user_type='student')
+    # user_registration(login='user3', password='123', user_type='instructor')
     pass

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="..\static\css\data__style.css">
+        <link rel="stylesheet" href="..\static\fonts">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Driving System</title>
+    </head>
+    <body>
+        <div class="header">
+            <div class="container">
+                <div class="header_inner">
+                    <img src="..\static\img\logo.png" alt="">            
+                    <div class="header_logo_text">Driving System</div>
+                    <nav class="nav">
+                        <a class="nav__link"href="#">Информация</a>
+                        <a class="nav__link"href="#">Услуги</a>
+                        <a class="nav__link"href="#">Контакты</a>
+                    </nav>
+                    <div class="soc">
+                        <a class="soc__img"href="">
+                            <img src="..\static\img\vk.png" alt="">
+                        </a>
+                        <a class="soc__img"href="">
+                            <img src="..\static\img\tg.png" alt="">
+                        </a>
+                        <a class="soc__img"href="">
+                            <img src="..\static\img\wa.png" alt="">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="calendar">
+                <div class="calendar__inner">
+                    <div class="week">
+                        <img src="..\static\img\data\vector2.svg">
+                        <div>ПН|<label>01</label></div>
+                        <div>ВТ|<label>02</label></div>
+                        <div>СР|<label>03</label></div>
+                        <div>ЧТ|<label>04</label></div>
+                        <div>ПТ|<label>05</label></div>
+                        <div>СБ|<label>06</label></div>
+                        <div>ВС|<label>07</label></div>
+                        <img style="transform: rotate(180deg);" src="..\static\img\data\vector2.svg">
+                    </div>
+                    <div class="dates">
+                        <div class="month">
+                            <div style="display: flex; align-items: center; cursor: pointer;" onclick="image(0)"><img src="..\static\img\data\vector.svg"></img></div>
+                                <script src="..\static\js\month.js"></script>
+                            <div  onclick="image(1)"><img style="transform: rotate(180deg); display: flex; align-items: center; cursor: pointer;" src="..\static\img\data\vector.svg"></img></div>
+                            </div>
+                        <div class="dates__sq">
+                            {% for row in times %}
+                                <div class="row">
+                                {% for el in row %}
+                                    <button class="colum-{{ el[1] }}" id="{{ el[1] }}">{{ el[0] }}</button>
+                                {% endfor %}
+                                </div>
+                            {% endfor %}
+                            <script src="..\static\js\status.js"></script>
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+        <div class="info">
+            <div class="container">
+                <div class="info__inner">
+                    <div>
+                        <div>Инструктор: <label style="color: #2055E5;">0651</label></div>
+                        <div>Дата: <label style="color: #2055E5;">0651</label></div>
+                        <div>Время: <label style="color: #2055E5;">0651</label></div>
+                        <div>Место встречи: <label style="color: #2055E5;">Не знаю</label></div>
+                    </div>
+                    <div>
+                        <div>Цена: <label style="color: #2055E5;">0651</label></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <script>
+        // Получаем список всех блоков
+const blocks = document.querySelectorAll('.colum-free');
+
+// Создаем массив для хранения выбранных блоков
+let selectedBlocks = [];
+
+// Добавляем обработчик события щелчка на каждом блоке
+blocks.forEach(block => {
+  block.addEventListener('click', () => {
+    // Проверяем, выбран ли блок
+    if (selectedBlocks.includes(block)) {
+      // Если блок уже выбран, удаляем его из массива
+      selectedBlocks = selectedBlocks.filter(selectedBlock => selectedBlock !== block);
+    } else {
+      // Если блок не выбран, добавляем его в массив
+      selectedBlocks.push(block);
+    }
+
+    // Применяем стиль или добавляем класс к выбранным блокам
+    selectedBlocks.forEach(selectedBlock => {
+      selectedBlock.style.backgroundColor = '#2055E5';
+    });
+  });
+});
+    </script>
+
+    </body>
+</html>
