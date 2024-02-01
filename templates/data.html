@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="..\static\css\data__style.css">
         <link rel="stylesheet" href="..\static\fonts">
+        <script src="..\static\js\jquery.js"></script>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Driving System</title>
     </head>
@@ -38,13 +39,13 @@
                 <div class="calendar__inner">
                     <div class="week">
                         <img src="..\static\img\data\vector2.svg">
-                        <div>ПН|<label>01</label></div>
-                        <div>ВТ|<label>02</label></div>
-                        <div>СР|<label>03</label></div>
-                        <div>ЧТ|<label>04</label></div>
-                        <div>ПТ|<label>05</label></div>
-                        <div>СБ|<label>06</label></div>
-                        <div>ВС|<label>07</label></div>
+                        <div>ПН|<label>{{ dates[0] }}</label></div>
+                        <div>ВТ|<label>{{ dates[1] }}</label></div>
+                        <div>СР|<label>{{ dates[2] }}</label></div>
+                        <div>ЧТ|<label>{{ dates[3] }}</label></div>
+                        <div>ПТ|<label>{{ dates[4] }}</label></div>
+                        <div>СБ|<label>{{ dates[5] }}</label></div>
+                        <div>ВС|<label>{{ dates[6] }}</label></div>
                         <img style="transform: rotate(180deg);" src="..\static\img\data\vector2.svg">
                     </div>
                     <div class="dates">
@@ -57,7 +58,7 @@
                             {% for row in times %}
                                 <div class="row">
                                 {% for el in row %}
-                                    <button class="colum-{{ el[1] }}" id="{{ el[1] }}">{{ el[0] }}</button>
+                                    <button class="column" id="{{ el[1] }}" onclick="ButtonClick(this)">{{ el[0] }}</button>
                                 {% endfor %}
                                 </div>
                             {% endfor %}
@@ -69,46 +70,21 @@
 
         <div class="info">
             <div class="container">
-                <div class="info__inner">
+                <form action="calendar" method="POST" class="info__inner">
+                        <div>Инструктор:<input name="name" type="text" value="INstructor" disabled style="color: #2055E5; font-family: 'DisketMono'; background: #fff; border: none; font-size: 20px;  width: 800px;"></div>
+                        Дата:<input name="date" type="text" value="94.82.3704" disabled style="color: #2055E5; font-family: 'DisketMono'; background: #fff; border: none; font-size: 20px; width: 800px;">
+                        <div>Время:<input name="workTime1" type="text" value="...." disabled style="color: #2055E5; font-family: 'DisketMono'; background: #fff; border: none; font-size: 20px; width: 75px;">-<input name="workTime2" type="text" value="...." disabled style="color: #2055E5; font-family: 'DisketMono'; background: #fff; border: none; font-size: 20px; width: 75px;"></div>
+                        <div>Место встречи:<input type="text" value="Никогда и нигде" disabled style="color: #2055E5; font-family: 'DisketMono'; background: #fff; border: none; font-size: 20px; width: 800px;"></div>
                     <div>
-                        <div>Инструктор: <label style="color: #2055E5;">0651</label></div>
-                        <div>Дата: <label style="color: #2055E5;">0651</label></div>
-                        <div>Время: <label style="color: #2055E5;">0651</label></div>
-                        <div>Место встречи: <label style="color: #2055E5;">Не знаю</label></div>
+                        <div>Цена:<input name="price" type="text" value="666.666" disabled style="color: #2055E5; font-family: 'DisketMono'; background: #fff; border: none; font-size: 20px; width: 800px;"></div>
                     </div>
-                    <div>
-                        <div>Цена: <label style="color: #2055E5;">0651</label></div>
-                    </div>
-                </div>
+                    <button>send</button>
+                </form>
             </div>
         </div>
 
-    <script>
-        // Получаем список всех блоков
-const blocks = document.querySelectorAll('.colum-free');
 
-// Создаем массив для хранения выбранных блоков
-let selectedBlocks = [];
 
-// Добавляем обработчик события щелчка на каждом блоке
-blocks.forEach(block => {
-  block.addEventListener('click', () => {
-    // Проверяем, выбран ли блок
-    if (selectedBlocks.includes(block)) {
-      // Если блок уже выбран, удаляем его из массива
-      selectedBlocks = selectedBlocks.filter(selectedBlock => selectedBlock !== block);
-    } else {
-      // Если блок не выбран, добавляем его в массив
-      selectedBlocks.push(block);
-    }
-
-    // Применяем стиль или добавляем класс к выбранным блокам
-    selectedBlocks.forEach(selectedBlock => {
-      selectedBlock.style.backgroundColor = '#2055E5';
-    });
-  });
-});
-    </script>
 
     </body>
 </html>

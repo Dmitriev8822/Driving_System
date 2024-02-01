@@ -1,3 +1,7 @@
+import datetime
+from datetime import date
+from calendar import monthrange
+
 from flask import request, render_template, redirect, flash, url_for
 from flask_login import login_required, logout_user, current_user
 
@@ -231,12 +235,68 @@ def search():
     return render_template('search.html', users=result)
 
 
-@app.route('/calendar')
+@app.route('/calendar', methods=['GET', 'POST'])
 def calendar():
-    dt = datetime(year=2024, month=2, day=1)
+    # if request.method == 'POST':
+    #     name = request.form.get('')
+    #     print(name)
+
+    dates = list()
+    # dt = datetime(year=2024, month=2, day=1)
+    date_today = date.today()
+    year_today = date_today.year
+    month_today = date_today.month if int(date_today.day) - int(date_today.weekday()) > 0 else date_today.month - 1
+    day_today = int(date_today.day) - int(date_today.weekday()) if int(date_today.day) - int(date_today.weekday()) > 0 else int(monthrange(year_today, month_today)[1]) - (int(date_today.weekday()) - int(date_today.day))
+    # print(day_today)
+    dt = date(
+        year=year_today,
+        month=month_today,
+        day=day_today
+    )
+
     dt7 = dt + timedelta(days=7)
+    print(dt)
+    print(dt7)
+    while 1:
+        if dt == dt7:
+            break
+
+        print(dates)
+        dates.append(dt.day)
+        dt = dt + timedelta(1)
+
+    dt -= timedelta(7)
+
     times = get_info_user_calendar(current_user.id, dt, dt7)
-    return render_template('data.html', times=times)
+    return render_template('data.html', times=times, dates=dates)
+
+
+@app.route('/calendarw', methods=['GET', 'POST'])
+def calendar_week():
+    if request.method == 'POST':
+        divinfo = request.get_json()
+        print(divinfo)
+
+    dates = list()
+    # dt = datetime(year=2024, month=2, day=1)
+    dt = date(
+        year=date.today().year,
+        month=date.today().month,
+        day=int(date.today().day) - int(date.today().weekday())
+    )
+
+    dt7 = dt + timedelta(days=7)
+    while 1:
+        if dt == dt7:
+            break
+
+        dates.append(dt.day)
+        dt = dt + timedelta(1)
+
+    dt -= timedelta(7)
+
+    times = get_info_user_calendar(current_user.id, dt, dt7)
+    return render_template('data.html', times=times, dates=dates)
 
 
 if __name__ == '__main__':

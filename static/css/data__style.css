@@ -116,6 +116,19 @@ border: 2px solid #2055E5;
 	color: #333;
 }
 
+#selected {
+	background: #2055E5;
+	border: 2px solid #2055E5;
+
+	color: #fff;
+
+	cursor: pointer;
+}
+
+#selected:hover {
+	transform: scale(1.05);
+}
+
 /* Calendar */
 
 .calendar {
@@ -194,7 +207,7 @@ border: 2px solid #2055E5;
 	justify-content: space-between;
 }
 
-.colum-free {
+.column {
 	width: 96px;
 	height: 52px;
 
@@ -213,7 +226,26 @@ border: 2px solid #2055E5;
 	text-align: center;
 }
 
-.colum-busy {
+#free {
+	width: 96px;
+	height: 52px;
+
+	background: #fff;
+
+	border: 2px solid #2055E5;
+	border-radius: 10px;
+	margin: 2.5px 5px;
+
+	transition: .1s;
+
+	color: #2055E5;
+	font-size: 24px;
+	font-family: DisketMono;
+
+	text-align: center;
+}
+
+#busy {
 	width: 96px;
 	height: 52px;
 
@@ -232,7 +264,7 @@ border: 2px solid #2055E5;
 	text-align: center;
 }
 
-.colum-entry {
+#entry {
 	width: 96px;
 	height: 52px;
 
@@ -251,7 +283,7 @@ border: 2px solid #2055E5;
 	text-align: center;
 }
 
-.colum-free:hover {
+#free:hover {
 	background: #2055E5;
 
 
@@ -261,7 +293,7 @@ border: 2px solid #2055E5;
 	cursor: pointer;
 }
 
-.colum-entry:hover {
+#entry:hover {
 	border: 2px solid #2055E5;
 
 	cursor: pointer;
