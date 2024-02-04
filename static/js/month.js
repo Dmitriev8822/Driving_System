@@ -44,6 +44,8 @@ function ButtonClick(n){
             }
         }
         firstSelect = num_active;
+        document.getElementById('workTime1').innerHTML = n.innerHTML;
+        document.getElementById('workTime2').innerHTML = "....";
         document.getElementsByName('workTime1')[0].value = n.innerHTML;
         document.getElementsByName('workTime2')[0].value = "....";
         getTime = true;
@@ -55,7 +57,11 @@ function ButtonClick(n){
         n.id = 'selected';
         if(firstSelect == -1 && getTime) { // Выбрана ли первая граница
             firstSelect = num_active;
+            document.getElementById('workTime1').innerHTML = n.innerHTML;
             document.getElementsByName('workTime1')[0].value = n.innerHTML;
+
+            document.getElementsByName('workTime1')[0].value = n.innerHTML;
+               document.getElementsByName('workTime2')[0].value = "....";
         }
         else {
             if((parseInt(num_active / 26) - parseInt(firstSelect / 26) != 0) || !getTime || num_active - firstSelect <= 0) { // Одна строка
@@ -66,8 +72,8 @@ function ButtonClick(n){
                         StatusData[i].id = 'free';
                     }
                 }
-                document.getElementsByName('workTime1')[0].value = n.innerHTML;
-                document.getElementsByName('workTime2')[0].value = "....";
+                document.getElementById('workTime1').innerHTML = n.innerHTML;
+                document.getElementById('workTime2').innerHTML = "....";
                 getTime = true;
                 n.id = 'selected';
                 return;
@@ -91,6 +97,7 @@ function ButtonClick(n){
                     StatusData[i].id = 'selected';
                 firstSelect = -1;
                 getTime = false;
+                document.getElementById('workTime2').innerHTML = n.innerHTML;
                 document.getElementsByName('workTime2')[0].value = n.innerHTML;
             }
             else {

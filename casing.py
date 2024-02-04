@@ -129,27 +129,27 @@ def is_profile_image(user_id, change=False, path=False, round_image=False):
     user_id = str(user_id)
     files = os.listdir(path_to_profile_images)
     for file in files:
-        if user_id in file:
+        if user_id == file.split('.')[-2]:
             if change:
-                os.remove(path_to_profile_images + f'{file}')
-                os.remove(path_to_profile_images + f'{user_id}r.png')
+                os.remove(os.path.join(path_to_profile_images, f'{file}'))
+                os.remove(os.path.join(path_to_profile_images, f'{user_id}r.png'))
 
             if path:
                 if round_image:
-                    return path_to_profile_images + user_id + 'r.' + file.split('.')[-1]
+                    return os.path.join(path_to_profile_images, user_id + 'r.' + file.split('.')[-1])
                 else:
-                    return path_to_profile_images + file
+                    return os.path.join(path_to_profile_images, file)
 
             return True
     return False
 
 
 def format_profile_photo(file):
-    path_to_file = path_to_profile_images + file
+    path_to_file = os.path.join(path_to_profile_images, file)
     image = Image.open(path_to_file)
     resized_image = image.resize((200, 200))
     os.remove(path_to_file)
-    path_to_file = path_to_profile_images + file.split('.')[0] + '.' + 'png'
+    path_to_file = os.path.join(path_to_profile_images, file.split('.')[0] + '.' + 'png')
     resized_image.save(path_to_file)
 
     # Открываем изображение
@@ -159,13 +159,13 @@ def format_profile_photo(file):
     draw = ImageDraw.Draw(rounded_image)
     draw.ellipse([(0, 0), image.size], fill=(255, 255, 255, 255))
     rounded_image.paste(image, (0, 0), mask=rounded_image)
-    path_to_file = path_to_profile_images + file.split('.')[0] + 'r' + '.' + 'png'
+    path_to_file = os.path.join(path_to_profile_images, file.split('.')[0] + 'r' + '.' + 'png')
     rounded_image.save(path_to_file)
 
 
-@app.route('/account/student', methods=['GET', 'POST'])
+@app.route('/account/student_old', methods=['GET', 'POST'])
 @login_required
-def student_account():
+def student_account_old():
     if request.method == 'POST':
         fio = request.form.get('fio')
         description = request.form.get('description')
@@ -194,10 +194,7 @@ def student_account():
     fio = ' '.join([current_user.second_name, current_user.name,
                     current_user.father_name]) if current_user.name is not None else ''
     description = current_user.description if current_user.description is not None else ''
-    main_photo = '../' + path_to_profile_images + \
-                 [name if user_id in name else '' for name in os.listdir(path_to_profile_images)][
-                     0] if current_user.is_authenticated and is_profile_image(
-        str(current_user.id)) else '../static/img/photo_test.png'
+    main_photo = '../' + path_to_profile_images + [name if user_id in name else '' for name in os.listdir(path_to_profile_images)][0] if current_user.is_authenticated and is_profile_image(str(current_user.id)) else '../static/img/photo_test.png'
 
     return render_template('student_account.html', fio=fio, description=description, name=name, user_id=user_id,
                            main_photo=main_photo)
@@ -208,8 +205,65 @@ def student_account():
 def instructor_account():
     if request.method == 'POST':
         fio = request.form.get('fio')
+        description = request.form.get('description')
+        photo = request.files.get('photo')
+        # print(f'fio = {fio}; fio_issp = {fio.isspace()}; fio_spl = {fio.split()}.')
+        if fio and not fio.isspace() and len(fio.split()) == 3:
+            second_name, name, father_name = fio.split()
+            update_user_info(str(current_user.id), name=name, second_name=second_name, father_name=father_name)
+        else:
+            # вывод сообщения о некорректном вводе фио
+            print('error')
 
-    return render_template('instructor_account.html')
+        update_user_info(str(current_user.id), description=description)
+
+        if photo is not None and photo.filename != '':
+            is_profile_image(current_user.id, change=True)
+
+            photo.filename = f'{str(current_user.id)}.png'
+            photo.save(os.path.join(path_to_profile_images, photo.filename))
+
+            format_profile_photo(photo.filename)
+
+    fio = ' '.join([current_user.name, current_user.second_name, current_user.father_name]) if current_user.name is not None and current_user.second_name is not None and current_user.father_name is not None else ''
+    user_id = str(current_user.id)
+    description = current_user.description if current_user.description is not None else ''
+    # main_photo = '../' + path_to_profile_images + list(filter(lambda x: x != '', [name if user_id == name.split('.')[-2] else '' for name in os.listdir(path_to_profile_images)]))[0] if current_user.is_authenticated and is_profile_image(str(current_user.id)) else '../static/img/photo.jpg'
+    main_photo = os.path.join('..', is_profile_image(str(current_user.id), path=True)) if current_user.is_authenticated and is_profile_image(str(current_user.id)) else '../static/img/photo.jpg'
+    return render_template('survey_instructor.html', fio=fio, description=description, user_id=user_id, main_photo=main_photo)
+
+
+@app.route('/account/student', methods=['GET', 'POST'])
+@login_required
+def student_account():
+    if request.method == 'POST':
+        fio = request.form.get('fio')
+        description = request.form.get('description')
+        photo = request.files.get('photo')
+        # print(f'fio = {fio}; fio_issp = {fio.isspace()}; fio_spl = {fio.split()}.')
+        if fio and not fio.isspace() and len(fio.split()) == 3:
+            second_name, name, father_name = fio.split()
+            update_user_info(str(current_user.id), name=name, second_name=second_name, father_name=father_name)
+        else:
+            # вывод сообщения о некорректном вводе фио
+            print('error')
+
+        update_user_info(str(current_user.id), description=description)
+
+        if photo is not None and photo.filename != '':
+            is_profile_image(current_user.id, change=True)
+
+            photo.filename = f'{str(current_user.id)}.png'
+            photo.save(os.path.join(path_to_profile_images, photo.filename))
+
+            format_profile_photo(photo.filename)
+
+    fio = ' '.join([current_user.name, current_user.second_name, current_user.father_name]) if current_user.name is not None and current_user.second_name is not None and current_user.father_name is not None else ''
+    user_id = str(current_user.id)
+    description = current_user.description if current_user.description is not None else ''
+    # main_photo = '../' + path_to_profile_images + list(filter(lambda x: x != '', [name if user_id == name.split('.')[-2] else '' for name in os.listdir(path_to_profile_images)]))[0] if current_user.is_authenticated and is_profile_image(str(current_user.id)) else '../static/img/photo.jpg'
+    main_photo = os.path.join('..', is_profile_image(str(current_user.id), path=True)) if current_user.is_authenticated and is_profile_image(str(current_user.id)) else '../static/img/photo.jpg'
+    return render_template('survey_student.html', fio=fio, description=description, user_id=user_id, main_photo=main_photo)
 
 
 @app.route('/swap')
@@ -222,6 +276,7 @@ def swap():
 def index():
     if current_user.is_authenticated:
         # ..\static\img\user.png
+        print(is_profile_image(current_user.id, path=True, round_image=True))
         path_image = is_profile_image(current_user.id, path=True, round_image=True) if is_profile_image(
             current_user.id) else r'..\static\img\user.png'
         # path_image = r'..\static\img\user.png'
@@ -237,17 +292,24 @@ def search():
 
 @app.route('/calendar', methods=['GET', 'POST'])
 def calendar():
-    # if request.method == 'POST':
-    #     name = request.form.get('')
-    #     print(name)
+    if request.method == 'POST':
+        instructor_id = request.form.get('instructor_id')
+        lesson_date = request.form.get('lesson_date')
+        work_time1 = request.form.get('workTime1')
+        work_time2 = request.form.get('workTime2')
+        meeting_place = request.form.get('meeting_place')
+        lesson_price = request.form.get('lesson_price')
+        print(instructor_id, lesson_date, work_time1, work_time2, meeting_place, lesson_price)
 
     dates = list()
     # dt = datetime(year=2024, month=2, day=1)
     date_today = date.today()
     year_today = date_today.year
     month_today = date_today.month if int(date_today.day) - int(date_today.weekday()) > 0 else date_today.month - 1
-    day_today = int(date_today.day) - int(date_today.weekday()) if int(date_today.day) - int(date_today.weekday()) > 0 else int(monthrange(year_today, month_today)[1]) - (int(date_today.weekday()) - int(date_today.day))
-    # print(day_today)
+    day_today = int(date_today.day) - int(date_today.weekday()) if int(date_today.day) - int(
+        date_today.weekday()) > 0 else int(monthrange(year_today, month_today)[1]) - (
+            int(date_today.weekday()) - int(date_today.day))
+
     dt = date(
         year=year_today,
         month=month_today,
@@ -255,13 +317,11 @@ def calendar():
     )
 
     dt7 = dt + timedelta(days=7)
-    print(dt)
-    print(dt7)
+
     while 1:
         if dt == dt7:
             break
 
-        print(dates)
         dates.append(dt.day)
         dt = dt + timedelta(1)
 

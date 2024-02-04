@@ -71,18 +71,28 @@
         <div class="info">
             <div class="container">
                 <form action="calendar" method="POST" class="info__inner">
-                        <div>Инструктор:<input name="name" type="text" value="INstructor" disabled style="color: #2055E5; font-family: 'DisketMono'; background: #fff; border: none; font-size: 20px;  width: 800px;"></div>
-                        Дата:<input name="date" type="text" value="94.82.3704" disabled style="color: #2055E5; font-family: 'DisketMono'; background: #fff; border: none; font-size: 20px; width: 800px;">
-                        <div>Время:<input name="workTime1" type="text" value="...." disabled style="color: #2055E5; font-family: 'DisketMono'; background: #fff; border: none; font-size: 20px; width: 75px;">-<input name="workTime2" type="text" value="...." disabled style="color: #2055E5; font-family: 'DisketMono'; background: #fff; border: none; font-size: 20px; width: 75px;"></div>
-                        <div>Место встречи:<input type="text" value="Никогда и нигде" disabled style="color: #2055E5; font-family: 'DisketMono'; background: #fff; border: none; font-size: 20px; width: 800px;"></div>
                     <div>
-                        <div>Цена:<input name="price" type="text" value="666.666" disabled style="color: #2055E5; font-family: 'DisketMono'; background: #fff; border: none; font-size: 20px; width: 800px;"></div>
+                        <div>Инструктор: <label style="color: #2055E5;">Iarcev Sergey</label></div>
+                        <input type="hidden" name="instructor_id" value="1111" readonly>
+
+                        <div>Дата: <label style="color: #2055E5;">11.22.63</label></div>
+                        <input type="hidden" name="lesson_date" value="11.22.63" readonly>
+
+                        <div>Время: <label id="workTime1" style="color: #2055E5;">....</label>-<label id="workTime2" style="color: #2055E5;">....</label></div>
+                        <input type="hidden" name="workTime1" value="...." readonly>
+                        <input type="hidden" name="workTime2" value="...." readonly>
+
+                        <div>Место встречи: <label style="color: #2055E5;">изменить нельзя</label></div>
+                        <input type="hidden" name="meeting_place" value="meeting_placeinst" readonly>
                     </div>
-                    <button>send</button>
+                    <div>
+                        <div>Цена: <label style="color: #2055E5;">777</label></div>
+                        <input type="hidden" name="lesson_price" value="777" readonly>
+                    </div>
+                    <button>Send</button>
                 </form>
             </div>
         </div>
-
 
 
 
