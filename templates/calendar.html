@@ -37,8 +37,8 @@
 
         <div class="calendar">
                 <div class="calendar__inner">
-                    <form action="calendar/" class="week">
-                        <a href=""><img src="..\static\img\data\vector2.svg"></a>
+                    <div class="week">
+                        <a href="{{ instructor_id }}|{{ last_week }}"><img src="..\static\img\data\vector2.svg"></a>
                         <div>ПН|<label>{{ dates[0] }}</label></div>
                         <div>ВТ|<label>{{ dates[1] }}</label></div>
                         <div>СР|<label>{{ dates[2] }}</label></div>
@@ -46,13 +46,13 @@
                         <div>ПТ|<label>{{ dates[4] }}</label></div>
                         <div>СБ|<label>{{ dates[5] }}</label></div>
                         <div>ВС|<label>{{ dates[6] }}</label></div>
-                        <a href=""><img style="transform: rotate(180deg);" src="..\static\img\data\vector2.svg"></a>
-                    </form>
+                        <a href="{{ instructor_id }}|{{ next_week }}"><img style="transform: rotate(180deg);" src="..\static\img\data\vector2.svg"></a>
+                    </div>
                     <div class="dates">
                         <div class="month">
-                            <div style="display: flex; align-items: center; cursor: pointer;"><img src="..\static\img\data\vector.svg"></div>
-                                <script src="..\static\js\month.js"></script>
-                            <div><img style="transform: rotate(180deg); display: flex; align-items: center; cursor: pointer;" src="..\static\img\data\vector.svg"></div>
+                            <div class="month__inner">
+                                {{ month }}<label>{{ year }}</label>
+                            </div>
                         </div>
                         <div class="dates__sq">
                             {% for row in times %}
@@ -72,9 +72,10 @@
             <div class="container">
                 <form action="calendar" method="POST" class="info__inner">
                     <div>
-                        <div>Инструктор: <label style="color: #2055E5;">Iarcev Sergey</label></div>
-                        <input type="hidden" name="instructor_id" value="1111" readonly>
+                        <div>Инструктор: <label style="color: #2055E5;">{{ instructor_name }}</label></div>
+                        <input type="hidden" name="instructor_id" value="{{ instructor_id }}" readonly>
 
+                        <!-- следующие две строки необходимо изменять -->
                         <div>Дата: <label style="color: #2055E5;">11.22.63</label></div>
                         <input type="hidden" name="lesson_date" value="11.22.63" readonly>
 
@@ -86,14 +87,14 @@
                         <input type="hidden" name="meeting_place" value="meeting_placeinst" readonly>
                     </div>
                     <div>
-                        <div>Цена: <label style="color: #2055E5;">777</label></div>
-                        <input type="hidden" name="lesson_price" value="777" readonly>
+                        <div>Цена: <label style="color: #2055E5;">{{ price }}</label></div>
+                        <input type="hidden" name="lesson_price" value="{{ price }}₽" readonly>
                     </div>
                     <button>Send</button>
                 </form>
             </div>
         </div>
-
+        <script src="../static/js/month.js"></script>
 
 
     </body>

@@ -201,6 +201,7 @@ border: 2px solid #2055E5;
 
 	background: #fff;
 	border: 2px solid #2055E5;
+    color: #2055E5;
 
 	display: flex;
 	align-items: center;
@@ -281,6 +282,26 @@ border: 2px solid #2055E5;
 	font-family: DisketMono;
 
 	text-align: center;
+}
+
+#done {
+	width: 96px;
+	height: 52px;
+
+	background: #778899;
+
+	border: 2px solid #778899;
+	border-radius: 10px;
+	margin: 2.5px 5px;
+
+	transition: .1s;
+
+	color: #fff;
+	font-size: 24px;
+	font-family: DisketMono;
+
+	text-align: center;
+	opacity: 0.5;
 }
 
 #free:hover {

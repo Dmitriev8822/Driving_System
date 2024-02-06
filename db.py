@@ -27,7 +27,7 @@ class Lesson(db.Model):
     id_lesson = db.Column(db.Integer, primary_key=True, unique=False, autoincrement=True)
     date = db.Column(db.DateTime, nullable=False, unique=True)
     duration = db.Column(db.Integer, nullable=False, unique=False)
-    status = db.Column(db.String(128), nullable=False, unique=False)  # free || during || busy || entry
+    status = db.Column(db.String(128), nullable=False, unique=False)  # free || busy || entry || done
     student_id = db.Column(db.String(128), nullable=False, unique=False)
     instructor_id = db.Column(db.String(128), nullable=False, unique=False)
 
@@ -150,6 +150,7 @@ def get_info_user_calendar(user_id, date_from, date_to):
         result = list()
         while i < len(times):
             time = times[i]
+            date_lesson = datetime(year=date.year, month=date.month, day=date.day, hour=int(time.split(':')[0]), minute=int(time.split(':')[1]))
             if time in lessons:
                 employment = 'busy'
                 if durations[lessons.index(time)][1] == user_id:
@@ -160,7 +161,10 @@ def get_info_user_calendar(user_id, date_from, date_to):
                     result.append([times[i + j], employment])
                 i += counter
             else:
-                result.append([time, 'free'])
+                if date_lesson < datetime.today():
+                    result.append([time, 'done'])
+                else:
+                    result.append([time, 'free'])
             i += 1
 
         results.append(result)

@@ -1,6 +1,6 @@
 import datetime
 from datetime import date
-from calendar import monthrange
+from calendar import monthrange, month_name
 
 from flask import request, render_template, redirect, flash, url_for
 from flask_login import login_required, logout_user, current_user
@@ -256,7 +256,8 @@ def instructor_account():
                                                      path=True)) if current_user.is_authenticated and is_profile_image(
         str(current_user.id)) else '../static/img/photo.jpg'
 
-    find_photo = list(filter(lambda img: img != None, [img if user_id == img.split('.')[0] else None for img in os.listdir(path_to_cars_images)]))
+    find_photo = list(filter(lambda img: img != None, [img if user_id == img.split('.')[0] else None for img in
+                                                       os.listdir(path_to_cars_images)]))
     car_photo = os.path.join('..', path_to_cars_images, find_photo[0]) if find_photo else '../static/img/bigPhoto.jpg'
 
     return render_template('survey_instructor.html', fio=fio, description=description, user_id=user_id,
@@ -330,8 +331,9 @@ def search():
     return render_template('search.html', users=result)
 
 
-@app.route('/calendar', methods=['GET', 'POST'])
-def calendar():
+@app.route('/calendar/<instructor_id>|<calendar_date>', methods=['GET', 'POST'])
+@login_required
+def calendar(instructor_id, calendar_date):
     if request.method == 'POST':
         instructor_id = request.form.get('instructor_id')
         lesson_date = request.form.get('lesson_date')
@@ -342,13 +344,21 @@ def calendar():
         print(instructor_id, lesson_date, work_time1, work_time2, meeting_place, lesson_price)
 
     dates = list()
-    # dt = datetime(year=2024, month=2, day=1)
-    date_today = date.today()
-    year_today = date_today.year
-    month_today = date_today.month if int(date_today.day) - int(date_today.weekday()) > 0 else date_today.month - 1
-    day_today = int(date_today.day) - int(date_today.weekday()) if int(date_today.day) - int(
-        date_today.weekday()) > 0 else int(monthrange(year_today, month_today)[1]) - (
-            int(date_today.weekday()) - int(date_today.day))
+
+    if calendar_date == 'today':
+        date_calendar = datetime.today()
+    else:
+        date_calendar = datetime.strptime(calendar_date, "%d%m%Y")
+
+    last_week = (date_calendar - timedelta(7)).strftime("%d%m%Y")
+    next_week = (date_calendar + timedelta(7)).strftime("%d%m%Y")
+
+    year_today = date_calendar.year
+    month_today = date_calendar.month if int(date_calendar.day) - int(
+        date_calendar.weekday()) > 0 else date_calendar.month - 1
+    day_today = int(date_calendar.day) - int(date_calendar.weekday()) if int(date_calendar.day) - int(
+        date_calendar.weekday()) > 0 else int(monthrange(year_today, month_today)[1]) - (
+            int(date_calendar.weekday()) - int(date_calendar.day))
 
     dt = date(
         year=year_today,
@@ -368,35 +378,8 @@ def calendar():
     dt -= timedelta(7)
 
     times = get_info_user_calendar(current_user.id, dt, dt7)
-    return render_template('calendar.html', times=times, dates=dates)
 
-
-@app.route('/calendar/<date_from>', methods=['GET', 'POST'])
-def calendar_week(date_from):
-    if request.method == 'POST':
-        divinfo = request.get_json()
-        print(divinfo)
-
-    dates = list()
-    # dt = datetime(year=2024, month=2, day=1)
-    dt = date(
-        year=date.today().year,
-        month=date.today().month,
-        day=int(date.today().day) - int(date.today().weekday())
-    )
-
-    dt7 = dt + timedelta(days=7)
-    while 1:
-        if dt == dt7:
-            break
-
-        dates.append(dt.day)
-        dt = dt + timedelta(1)
-
-    dt -= timedelta(7)
-
-    times = get_info_user_calendar(current_user.id, dt, dt7)
-    return render_template('calendar.html', times=times, dates=dates)
+    return render_template('calendar.html', times=times, dates=dates, last_week=last_week, next_week=next_week, year=year_today, month=month_name[int(month_today)], instructor_id=instructor_id)
 
 
 if __name__ == '__main__':

@@ -1,4 +1,3 @@
-var monthArray = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
 var today = new Date();
 var years = today.getFullYear();
 window.number = String(today.getMonth() + 1).padStart(2, '0') - 1;
@@ -6,33 +5,6 @@ var firstSelect = -1;
 var getTime = true;
 var StatusData = document.getElementsByClassName("column");
 
-function image(num){
-    if(num == 1){
-        if(number == monthArray.length - 1)
-        {
-            number = -1;
-            years++;
-            document.getElementById('month').innerHTML = monthArray[number] + '<label>' + years + '</label>';
-        }
-        if(number < monthArray.length - 1){
-            number++;
-            document.getElementById('month').innerHTML = monthArray[number] + '<label>' + years + '</label>';
-        }
-    }
-    else{
-        if(number == 0)
-        {
-            number = 11;
-            years--;
-            document.getElementById('month').innerHTML = monthArray[number] + '<label>' + years + '</label>';
-        }
-        else{
-            number--;
-            document.getElementById('month').innerHTML = monthArray[number] + '<label>' + years + '</label>';
-        }
-    }
-}
-document.write('<div id="month" class="month__inner">' + monthArray[number] + '<label>' + years + '</label>' + '</div>');
 
 function ButtonClick(n){
     var num_active = $(n).index(".column") + 1; // Номер элемента
@@ -52,7 +24,7 @@ function ButtonClick(n){
         n.id = 'selected';
         return;
     }
-    else if(n.id != 'busy')
+    else if(n.id == 'free')
     {
         n.id = 'selected';
         if(firstSelect == -1 && getTime) { // Выбрана ли первая граница
@@ -82,7 +54,7 @@ function ButtonClick(n){
             {
                 console.log("Incorrect");
                 alert("Минимальное время записи 1 час");
-                n.id = 'open';
+                n.id = 'free';
             }
             else if(num_active - firstSelect <= 3) { // Проверка границ
                 console.log("Correct");
