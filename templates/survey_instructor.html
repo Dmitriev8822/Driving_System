@@ -28,34 +28,34 @@
             </div>
         </div>
 
-        <div class="survey">
+        <form action="instructor" method="POST" enctype="multipart/form-data" class="survey">
             <div class="container">
                 <div class="sur__inner">
                     <div>
                         <div class="sur__profile">
                             <div>
-                                <label>ID: <label style="color: #2055E5;">0651</label></label>
+                                <label>ID: <label style="color: #2055E5;">{{ user_id }}</label></label>
                                 <div>
-                                    <label for="photo" style="cursor: pointer;"><img  style="border: 4px solid #2055E5;border-radius: 52px; width: 235px; height: 235px;" src="..\static\img\photo.jpg"></label>
-                                    <input type="file" class="input__file" id="photo">
+                                    <label for="photo" style="cursor: pointer;"><img  style="border: 4px solid #2055E5;border-radius: 52px; width: 235px; height: 235px;" src="{{ main_photo }}"></label>
+                                    <input name="photo" type="file" class="input__file" id="photo">
                                 </div>
                             </div>
                             <div class="pro__info">
                                 <div>
                                     <label>ФИО:</label>
-                                    <input class="avto" type="text" maxlength="9" placeholder=" _____________________">
+                                    <input name="fio" class="avto" type="text" maxlength="100" placeholder=" _____________________" value="{{ fio }}">
                                 </div>
                                 <div>
                                     <label>Автомобиль:</label>
-                                    <input class="avto" type="text" maxlength="9" placeholder=" (Марка, модель, год выпуска, кпп)" style="font-size: 23px;">
+                                    <input name="car_model" class="avto" type="text" maxlength="100" placeholder=" (Марка, модель, год выпуска, кпп)" style="font-size: 23px;" value="{{ car }}">
                                 </div>
                             </div>
                         </div>
                             <div style="transform: scale(1); margin-top: 35px;">
                                 <label>ФОТО АВТО:</label>
                                 <div>
-                                    <label for="bigPhoto" style="cursor: pointer;"><img style="border: 4px solid #2055E5;border-radius: 52px; width: 630px; height: 400px;" src="..\static\img\bigPhoto.jpg"></label>
-                                    <input type="file" class="input__file" id="bigPhoto">
+                                    <label for="bigPhoto" style="cursor: pointer;"><img style="border: 4px solid #2055E5;border-radius: 52px; width: 630px; height: 400px;" src="{{ car_photo }}"></label>
+                                    <input name="photo_car" type="file" class="input__file" id="bigPhoto">
                                 </div>
                             </div>
                     </div>
@@ -64,7 +64,7 @@
                     <label style="font-size: 23px">описание обучения:</label>
                         <form>
                             <div>
-                                <textarea class="inputB" cols="67" rows="10" maxlength="460" placeholder="__________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________"></textarea>
+                                <textarea name="description" class="inputB" cols="67" rows="10" maxlength="460" placeholder="__________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________">{{ description }}</textarea>
                             </div>
                         </form>
                     </div>
@@ -73,4 +73,4 @@
                     <button>СОХРАНИТЬ</button>
                 </div>
             </div>
-        </div>
+        </form>

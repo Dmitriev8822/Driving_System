@@ -37,8 +37,8 @@
 
         <div class="calendar">
                 <div class="calendar__inner">
-                    <div class="week">
-                        <img src="..\static\img\data\vector2.svg">
+                    <form action="calendar/" class="week">
+                        <a href=""><img src="..\static\img\data\vector2.svg"></a>
                         <div>ПН|<label>{{ dates[0] }}</label></div>
                         <div>ВТ|<label>{{ dates[1] }}</label></div>
                         <div>СР|<label>{{ dates[2] }}</label></div>
@@ -46,14 +46,14 @@
                         <div>ПТ|<label>{{ dates[4] }}</label></div>
                         <div>СБ|<label>{{ dates[5] }}</label></div>
                         <div>ВС|<label>{{ dates[6] }}</label></div>
-                        <img style="transform: rotate(180deg);" src="..\static\img\data\vector2.svg">
-                    </div>
+                        <a href=""><img style="transform: rotate(180deg);" src="..\static\img\data\vector2.svg"></a>
+                    </form>
                     <div class="dates">
                         <div class="month">
-                            <div style="display: flex; align-items: center; cursor: pointer;" onclick="image(0)"><img src="..\static\img\data\vector.svg"></img></div>
+                            <div style="display: flex; align-items: center; cursor: pointer;"><img src="..\static\img\data\vector.svg"></div>
                                 <script src="..\static\js\month.js"></script>
-                            <div  onclick="image(1)"><img style="transform: rotate(180deg); display: flex; align-items: center; cursor: pointer;" src="..\static\img\data\vector.svg"></img></div>
-                            </div>
+                            <div><img style="transform: rotate(180deg); display: flex; align-items: center; cursor: pointer;" src="..\static\img\data\vector.svg"></div>
+                        </div>
                         <div class="dates__sq">
                             {% for row in times %}
                                 <div class="row">

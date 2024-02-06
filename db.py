@@ -18,6 +18,7 @@ class User(db.Model, UserMixin):
     second_name = db.Column(db.String(255), nullable=True, unique=False)
     father_name = db.Column(db.String(255), nullable=True, unique=False)
     description = db.Column(db.TEXT(1010), nullable=True, unique=False)
+    car = db.Column(db.String(255), nullable=True, unique=False)
 
     # id_user || login || password || user_type || name || second_name || father_name || description
 
@@ -43,11 +44,11 @@ class Cars(db.Model):
     # id_car || make || model || transmission || date_release
 
 
-def user_registration(login, password, user_type, name=None, second_name=None, father_name=None, description=None):
+def user_registration(login, password, user_type, name=None, second_name=None, father_name=None, description=None, car=None):
     res = User.query.filter_by(login=login).first()
     if res is None:
         user = User(login=login, password=password, user_type=user_type, \
-                    name=name, second_name=second_name, father_name=father_name, description=description)
+                    name=name, second_name=second_name, father_name=father_name, description=description, car=car)
         try:
             db.session.add(user)
             db.session.commit()
@@ -86,7 +87,7 @@ def delete_users():
 
 
 def update_user_info(user_id, login=None, password=None, user_type=None, name=None, second_name=None, father_name=None,
-                     description=None):
+                     description=None, car=None):
     user = User.query.get(user_id)
 
     if login is not None:
@@ -103,6 +104,8 @@ def update_user_info(user_id, login=None, password=None, user_type=None, name=No
         user.father_name = father_name
     if description is not None:
         user.description = description
+    if car is not None:
+        user.car = car
 
     db.session.commit()
 
@@ -115,18 +118,6 @@ def get_instructors_info():
         results.append([instructor.name + ' ' + instructor.father_name, instructor.description])
 
     return results
-
-
-def create_users(num):
-    cnt = 1
-    for i in range(num):
-        cnt += 1
-        res = -1
-        while res != 0:
-            res = user_registration('Dmitrii' + str(cnt), '123', 'instructor', name='Дмитрий' + str(cnt),
-                                    second_name='Дмитриев' + str(cnt), father_name='Владимирович' + str(cnt),
-                                    description='Hi, I am nice teacher!' + str(cnt))
-            cnt += 1
 
 
 def add_car_to_cars_list(car):

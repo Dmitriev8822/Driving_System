@@ -12,7 +12,8 @@ from main import app
 from db import *
 
 app.config['SESSION_COOKIE_SECURE'] = True
-path_to_profile_images = os.path.join('static', 'img', 'profile')
+path_to_profile_images = os.path.join('static', 'data', 'profile')
+path_to_cars_images = os.path.join('static', 'data', 'cars')
 
 
 @login_manager.user_loader
@@ -163,6 +164,15 @@ def format_profile_photo(file):
     rounded_image.save(path_to_file)
 
 
+def format_car_photo(file):
+    path_to_file = os.path.join(path_to_cars_images, file)
+    image = Image.open(path_to_file)
+    resized_image = image.resize((640, 400))
+    os.remove(path_to_file)
+    path_to_file = os.path.join(path_to_cars_images, file.split('.')[0] + '.' + 'jpg')
+    resized_image.save(path_to_file)
+
+
 @app.route('/account/student_old', methods=['GET', 'POST'])
 @login_required
 def student_account_old():
@@ -194,7 +204,10 @@ def student_account_old():
     fio = ' '.join([current_user.second_name, current_user.name,
                     current_user.father_name]) if current_user.name is not None else ''
     description = current_user.description if current_user.description is not None else ''
-    main_photo = '../' + path_to_profile_images + [name if user_id in name else '' for name in os.listdir(path_to_profile_images)][0] if current_user.is_authenticated and is_profile_image(str(current_user.id)) else '../static/img/photo_test.png'
+    main_photo = '../' + path_to_profile_images + \
+                 [name if user_id in name else '' for name in os.listdir(path_to_profile_images)][
+                     0] if current_user.is_authenticated and is_profile_image(
+        str(current_user.id)) else '../static/img/photo_test.png'
 
     return render_template('student_account.html', fio=fio, description=description, name=name, user_id=user_id,
                            main_photo=main_photo)
@@ -206,8 +219,10 @@ def instructor_account():
     if request.method == 'POST':
         fio = request.form.get('fio')
         description = request.form.get('description')
+        car_model = request.form.get('car_model')
         photo = request.files.get('photo')
-        # print(f'fio = {fio}; fio_issp = {fio.isspace()}; fio_spl = {fio.split()}.')
+        photo_car = request.files.get('photo_car')
+
         if fio and not fio.isspace() and len(fio.split()) == 3:
             second_name, name, father_name = fio.split()
             update_user_info(str(current_user.id), name=name, second_name=second_name, father_name=father_name)
@@ -215,7 +230,7 @@ def instructor_account():
             # вывод сообщения о некорректном вводе фио
             print('error')
 
-        update_user_info(str(current_user.id), description=description)
+        update_user_info(str(current_user.id), description=description, car=car_model)
 
         if photo is not None and photo.filename != '':
             is_profile_image(current_user.id, change=True)
@@ -225,12 +240,27 @@ def instructor_account():
 
             format_profile_photo(photo.filename)
 
-    fio = ' '.join([current_user.name, current_user.second_name, current_user.father_name]) if current_user.name is not None and current_user.second_name is not None and current_user.father_name is not None else ''
+        if photo_car is not None and photo_car.filename != '':
+            photo_car.filename = f'{str(current_user.id)}.jpg'
+            photo_car.save(os.path.join(path_to_cars_images, photo_car.filename))
+            format_car_photo(photo_car.filename)
+
+    fio = ' '.join([current_user.name, current_user.second_name,
+                    current_user.father_name]) if current_user.name is not None and current_user.second_name is not None and current_user.father_name is not None else ''
+
     user_id = str(current_user.id)
+    car_model = current_user.car if current_user.car else ''
     description = current_user.description if current_user.description is not None else ''
-    # main_photo = '../' + path_to_profile_images + list(filter(lambda x: x != '', [name if user_id == name.split('.')[-2] else '' for name in os.listdir(path_to_profile_images)]))[0] if current_user.is_authenticated and is_profile_image(str(current_user.id)) else '../static/img/photo.jpg'
-    main_photo = os.path.join('..', is_profile_image(str(current_user.id), path=True)) if current_user.is_authenticated and is_profile_image(str(current_user.id)) else '../static/img/photo.jpg'
-    return render_template('survey_instructor.html', fio=fio, description=description, user_id=user_id, main_photo=main_photo)
+
+    main_photo = os.path.join('..', is_profile_image(str(current_user.id),
+                                                     path=True)) if current_user.is_authenticated and is_profile_image(
+        str(current_user.id)) else '../static/img/photo.jpg'
+
+    find_photo = list(filter(lambda img: img != None, [img if user_id == img.split('.')[0] else None for img in os.listdir(path_to_cars_images)]))
+    car_photo = os.path.join('..', path_to_cars_images, find_photo[0]) if find_photo else '../static/img/bigPhoto.jpg'
+
+    return render_template('survey_instructor.html', fio=fio, description=description, user_id=user_id,
+                           main_photo=main_photo, car=car_model, car_photo=car_photo)
 
 
 @app.route('/account/student', methods=['GET', 'POST'])
@@ -254,20 +284,30 @@ def student_account():
             is_profile_image(current_user.id, change=True)
 
             photo.filename = f'{str(current_user.id)}.png'
-            photo.save(os.path.join(path_to_profile_images, photo.filename))
+            photo.save(os.path.join(path_to_cars_images, photo.filename))
 
             format_profile_photo(photo.filename)
 
-    fio = ' '.join([current_user.name, current_user.second_name, current_user.father_name]) if current_user.name is not None and current_user.second_name is not None and current_user.father_name is not None else ''
+    fio = ' '.join([current_user.second_name, current_user.name,
+                    current_user.father_name]) if current_user.name is not None and current_user.second_name is not None and current_user.father_name is not None else ''
     user_id = str(current_user.id)
     description = current_user.description if current_user.description is not None else ''
     # main_photo = '../' + path_to_profile_images + list(filter(lambda x: x != '', [name if user_id == name.split('.')[-2] else '' for name in os.listdir(path_to_profile_images)]))[0] if current_user.is_authenticated and is_profile_image(str(current_user.id)) else '../static/img/photo.jpg'
-    main_photo = os.path.join('..', is_profile_image(str(current_user.id), path=True)) if current_user.is_authenticated and is_profile_image(str(current_user.id)) else '../static/img/photo.jpg'
-    return render_template('survey_student.html', fio=fio, description=description, user_id=user_id, main_photo=main_photo)
+    main_photo = os.path.join('..', is_profile_image(str(current_user.id),
+                                                     path=True)) if current_user.is_authenticated and is_profile_image(
+        str(current_user.id)) else '../static/img/photo.jpg'
+    return render_template('survey_student.html', fio=fio, description=description, user_id=user_id,
+                           main_photo=main_photo)
 
 
 @app.route('/swap')
 def swap():
+    if current_user.is_authenticated:
+        if current_user.user_type == 'student':
+            return redirect('/account/student')
+        else:
+            return redirect('/account/instructor')
+
     return render_template('swap.html')
 
 
@@ -328,11 +368,11 @@ def calendar():
     dt -= timedelta(7)
 
     times = get_info_user_calendar(current_user.id, dt, dt7)
-    return render_template('data.html', times=times, dates=dates)
+    return render_template('calendar.html', times=times, dates=dates)
 
 
-@app.route('/calendarw', methods=['GET', 'POST'])
-def calendar_week():
+@app.route('/calendar/<date_from>', methods=['GET', 'POST'])
+def calendar_week(date_from):
     if request.method == 'POST':
         divinfo = request.get_json()
         print(divinfo)
@@ -356,7 +396,7 @@ def calendar_week():
     dt -= timedelta(7)
 
     times = get_info_user_calendar(current_user.id, dt, dt7)
-    return render_template('data.html', times=times, dates=dates)
+    return render_template('calendar.html', times=times, dates=dates)
 
 
 if __name__ == '__main__':
