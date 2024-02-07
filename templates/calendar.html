@@ -58,7 +58,7 @@
                             {% for row in times %}
                                 <div class="row">
                                 {% for el in row %}
-                                    <button class="column" id="{{ el[1] }}" onclick="ButtonClick(this)">{{ el[0] }}</button>
+                                    <button value="1" class="column" id="{{ el[1] }}" onclick="ButtonClick(this)">{{ el[0] }}</button>
                                 {% endfor %}
                                 </div>
                             {% endfor %}
