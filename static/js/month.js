@@ -4,6 +4,7 @@ window.number = String(today.getMonth() + 1).padStart(2, '0') - 1;
 var firstSelect = -1;
 var getTime = true;
 var StatusData = document.getElementsByClassName("column");
+var WeekDays = document.getElementsByClassName("date");
 
 
 function ButtonClick(n){
@@ -67,6 +68,10 @@ function ButtonClick(n){
                     }
                 for(var i = firstSelect - 1; i < num_active; i++)
                     StatusData[i].id = 'selected';
+
+                console.log(num_active)
+                document.getElementById('lesson_date').innerHTML = WeekDays[parseInt(num_active / 30 - 0.1)].id;
+                document.getElementsByName('lesson_date')[0].value = WeekDays[parseInt(num_active / 30 - 0.1)].id;
                 firstSelect = -1;
                 getTime = false;
                 document.getElementById('workTime2').innerHTML = n.innerHTML;

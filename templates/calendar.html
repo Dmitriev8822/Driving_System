@@ -39,13 +39,13 @@
                 <div class="calendar__inner">
                     <div class="week">
                         <a href="{{ instructor_id }}|{{ last_week }}"><img src="..\static\img\data\vector2.svg"></a>
-                        <div>ПН|<label>{{ dates[0] }}</label></div>
-                        <div>ВТ|<label>{{ dates[1] }}</label></div>
-                        <div>СР|<label>{{ dates[2] }}</label></div>
-                        <div>ЧТ|<label>{{ dates[3] }}</label></div>
-                        <div>ПТ|<label>{{ dates[4] }}</label></div>
-                        <div>СБ|<label>{{ dates[5] }}</label></div>
-                        <div>ВС|<label>{{ dates[6] }}</label></div>
+                        <div class="date" id="{{ dates[0] }}">ПН|<label>{{ days[0] }}</label></div>
+                        <div class="date" id="{{ dates[1] }}">ВТ|<label>{{ days[1] }}</label></div>
+                        <div class="date" id="{{ dates[2] }}">СР|<label>{{ days[2] }}</label></div>
+                        <div class="date" id="{{ dates[3] }}">ЧТ|<label>{{ days[3] }}</label></div>
+                        <div class="date" id="{{ dates[4] }}">ПТ|<label>{{ days[4] }}</label></div>
+                        <div class="date" id="{{ dates[5] }}">СБ|<label>{{ days[5] }}</label></div>
+                        <div class="date" id="{{ dates[6] }}">ВС|<label>{{ days[6] }}</label></div>
                         <a href="{{ instructor_id }}|{{ next_week }}"><img style="transform: rotate(180deg);" src="..\static\img\data\vector2.svg"></a>
                     </div>
                     <div class="dates">
@@ -76,7 +76,7 @@
                         <input type="hidden" name="instructor_id" value="{{ instructor_id }}" readonly>
 
                         <!-- следующие две строки необходимо изменять -->
-                        <div>Дата: <label style="color: #2055E5;">11.22.63</label></div>
+                        <div>Дата: <label style="color: #2055E5;" id="lesson_date">....</label></div>
                         <input type="hidden" name="lesson_date" value="11.22.63" readonly>
 
                         <div>Время: <label id="workTime1" style="color: #2055E5;">....</label>-<label id="workTime2" style="color: #2055E5;">....</label></div>

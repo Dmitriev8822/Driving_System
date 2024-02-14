@@ -343,8 +343,6 @@ def calendar(instructor_id, calendar_date):
         lesson_price = request.form.get('lesson_price')
         print(instructor_id, lesson_date, work_time1, work_time2, meeting_place, lesson_price)
 
-    dates = list()
-
     if calendar_date == 'today':
         date_calendar = datetime.today()
     else:
@@ -368,18 +366,22 @@ def calendar(instructor_id, calendar_date):
 
     dt7 = dt + timedelta(days=7)
 
+    days = list()
+    dates = list()
+
     while 1:
         if dt == dt7:
             break
 
-        dates.append(dt.day)
+        days.append(dt.day)
+        dates.append(dt.strftime("%d.%m.%Y"))
         dt = dt + timedelta(1)
 
     dt -= timedelta(7)
 
     times = get_info_user_calendar(current_user.id, dt, dt7)
 
-    return render_template('calendar.html', times=times, dates=dates, last_week=last_week, next_week=next_week, year=year_today, month=month_name[int(month_today)], instructor_id=instructor_id)
+    return render_template('calendar.html', times=times, days=days, dates=dates, last_week=last_week, next_week=next_week, year=year_today, month=month_name[int(month_today)], instructor_id=instructor_id)
 
 
 if __name__ == '__main__':
