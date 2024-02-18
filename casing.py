@@ -335,13 +335,28 @@ def search():
 @login_required
 def calendar(instructor_id, calendar_date):
     if request.method == 'POST':
+        print(1)
         instructor_id = request.form.get('instructor_id')
         lesson_date = request.form.get('lesson_date')
         work_time1 = request.form.get('workTime1')
         work_time2 = request.form.get('workTime2')
         meeting_place = request.form.get('meeting_place')
         lesson_price = request.form.get('lesson_price')
-        print(instructor_id, lesson_date, work_time1, work_time2, meeting_place, lesson_price)
+
+        lesson_start = str(datetime.strptime(work_time1, "%H:%M")).split()[1].split(':')
+        lesson_date = datetime.strptime(lesson_date, "%d.%m.%Y")
+        lesson_time = str(datetime.strptime(work_time2, "%H:%M") - datetime.strptime(work_time1, "%H:%M")).split(':')
+        duration = (int(lesson_time[0]) * 60 + int(lesson_time[1])) // 30
+
+        date_todb = datetime(year=lesson_date.year, month=lesson_date.month, day=lesson_date.day,
+                             hour=int(lesson_start[0]), minute=int(lesson_start[1]))
+        print(date_todb)
+        # print(lesson_date, duration, current_user.id, instructor_id, meeting_place, lesson_price)
+
+        result = new_lesson_entry(date=date_todb, duration=duration, user_id=current_user.id,
+                                  instructor_id=instructor_id, place=meeting_place, price=lesson_price)
+
+        return redirect(f'{instructor_id}|{calendar_date}')
 
     if calendar_date == 'today':
         date_calendar = datetime.today()
@@ -379,9 +394,17 @@ def calendar(instructor_id, calendar_date):
 
     dt -= timedelta(7)
 
-    times = get_info_user_calendar(current_user.id, dt, dt7)
+    times = get_info_user_calendar(int(current_user.id), int(instructor_id), dt, dt7)
 
-    return render_template('calendar.html', times=times, days=days, dates=dates, last_week=last_week, next_week=next_week, year=year_today, month=month_name[int(month_today)], instructor_id=instructor_id)
+    return render_template('calendar.html', times=times, days=days, dates=dates, last_week=last_week,
+                           next_week=next_week, year=year_today, month=month_name[int(month_today)],
+                           instructor_id=instructor_id)
+
+
+def init_folders():
+    # добавить создание папок
+    # минимум cars и profile
+    pass
 
 
 if __name__ == '__main__':

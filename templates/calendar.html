@@ -70,14 +70,14 @@
 
         <div class="info">
             <div class="container">
-                <form action="calendar" method="POST" class="info__inner">
+                <form action="{{ instructor_id }}|today" method="POST" class="info__inner">
                     <div>
                         <div>Инструктор: <label style="color: #2055E5;">{{ instructor_name }}</label></div>
                         <input type="hidden" name="instructor_id" value="{{ instructor_id }}" readonly>
 
                         <!-- следующие две строки необходимо изменять -->
                         <div>Дата: <label style="color: #2055E5;" id="lesson_date">....</label></div>
-                        <input type="hidden" name="lesson_date" value="11.22.63" readonly>
+                        <input type="hidden" name="lesson_date" value="lesson_date" readonly>
 
                         <div>Время: <label id="workTime1" style="color: #2055E5;">....</label>-<label id="workTime2" style="color: #2055E5;">....</label></div>
                         <input type="hidden" name="workTime1" value="...." readonly>

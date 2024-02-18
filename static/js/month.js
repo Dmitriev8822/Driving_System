@@ -37,7 +37,9 @@ function ButtonClick(n){
                document.getElementsByName('workTime2')[0].value = "....";
         }
         else {
-            if((parseInt(num_active / 26) - parseInt(firstSelect / 26) != 0) || !getTime || num_active - firstSelect <= 0) { // Одна строка
+            console.log(num_active, num_active / 30, firstSelect, firstSelect / 30, !getTime)
+            if((parseInt(num_active / 30) - parseInt(firstSelect / 30) != 0) || !getTime || num_active - firstSelect <= 0) { // Одна строка
+                console.log("We are in!")
                 firstSelect = num_active;
                 for (var i = 0; i < StatusData.length; i++) {
                     if(StatusData[i].id == 'selected')
@@ -70,8 +72,8 @@ function ButtonClick(n){
                     StatusData[i].id = 'selected';
 
                 console.log(num_active)
-                document.getElementById('lesson_date').innerHTML = WeekDays[parseInt(num_active / 30 - 0.1)].id;
-                document.getElementsByName('lesson_date')[0].value = WeekDays[parseInt(num_active / 30 - 0.1)].id;
+                document.getElementById('lesson_date').innerHTML = WeekDays[parseInt(num_active / 30)].id;
+                document.getElementsByName('lesson_date')[0].value = WeekDays[parseInt(num_active / 30)].id;
                 firstSelect = -1;
                 getTime = false;
                 document.getElementById('workTime2').innerHTML = n.innerHTML;
