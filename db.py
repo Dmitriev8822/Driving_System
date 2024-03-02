@@ -10,7 +10,7 @@ db = SQLAlchemy(app)
 
 
 class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True, unique=False)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, unique=True)
     login = db.Column(db.String(128), nullable=False, unique=True)
     password = db.Column(db.String(255), nullable=False, unique=False)
     user_type = db.Column(db.String(64), nullable=False, unique=False)
@@ -24,7 +24,7 @@ class User(db.Model, UserMixin):
 
 
 class Lesson(db.Model):
-    id_lesson = db.Column(db.Integer, primary_key=True, unique=False, autoincrement=True)
+    id_lesson = db.Column(db.Integer, primary_key=True, unique=True, autoincrement=True)
     date = db.Column(db.DateTime, nullable=False, unique=True)
     duration = db.Column(db.Integer, nullable=False, unique=False)
     status = db.Column(db.String(128), nullable=False, unique=False)  # free || busy || entry || done
@@ -44,6 +44,55 @@ class Cars(db.Model):
     date_release = db.Column(db.String(128), nullable=False, unique=False)
 
     # id_car || make || model || transmission || date_release
+
+
+class Report(db.Model):
+    id_report = db.Column(db.Integer, primary_key=True, unique=True, autoincrement=True)
+    student_id = db.Column(db.Integer, nullable=False, unique=False)
+    instructor_id = db.Column(db.Integer, nullable=False, unique=False)
+    lesson_id = db.Column(db.Integer, nullable=False, unique=False)
+    results = db.Column(db.String(128), nullable=False, unique=False)
+
+    # id_report || student_id || instructor_id || lesson_id || results
+
+
+def new_report(student_id, instructor_id, lesson_id, results):
+    res = Report.query.filter_by(lesson_id=lesson_id).first()
+    if res is None:
+        report = Report(user_id=student_id, instructor_id=instructor_id, lesson_id=lesson_id, results=results)
+        try:
+            db.session.add(report)
+            db.session.commit()
+        except Exception as e:
+            print('Error:', e)
+            db.session.rollback()
+            return -1  # error
+
+    elif res is not None:
+        try:
+            res.user_id = student_id
+            res.instructor_id = instructor_id
+            res.lesson_id = lesson_id
+            res.results = results
+
+            db.session.commit()
+
+        except Exception as e:
+            print('Error:', e)
+            db.session.rollback()
+            return -1  # error
+
+
+def get_report_info(student_id=-1, instructor_id=-1):
+    reports = list()
+    results = list()
+    if student_id != -1:
+        reports = Report.query.filter_by(student_id=student_id)
+    elif instructor_id != -1:
+        reports = Report.query.filter_by(instructor_id=instructor_id)
+
+    for report in reports:
+        report = report
 
 
 def user_registration(login, password, user_type, name=None, second_name=None, father_name=None, description=None,
@@ -184,7 +233,9 @@ def get_info_user_calendar(user_id, instructor_id, date_from, date_to):
 
 
 def new_lesson_entry(date, duration, user_id, instructor_id, place, price):
-    check_busy = get_info_user_calendar(0, instructor_id, datetime(year=date.year, month=date.month, day=date.day, hour=0, minute=0), datetime(year=date.year, month=date.month, day=date.day, hour=23, minute=59))
+    check_busy = get_info_user_calendar(0, instructor_id,
+                                        datetime(year=date.year, month=date.month, day=date.day, hour=0, minute=0),
+                                        datetime(year=date.year, month=date.month, day=date.day, hour=23, minute=59))
     date_test = date
     for i in range(duration + 1):
         if [f'{date_test.hour}:{date_test.minute:02d}', 'busy'] in check_busy[0]:
@@ -194,11 +245,13 @@ def new_lesson_entry(date, duration, user_id, instructor_id, place, price):
     if not (1 < duration < 5):
         return -2  # incorrect duration
 
-    lesson = Lesson(date=date, duration=duration, status='busy', student_id=user_id, instructor_id=instructor_id, place=place, price=price)
+    lesson = Lesson(date=date, duration=duration, status='busy', student_id=user_id, instructor_id=instructor_id,
+                    place=place, price=price)
     db.session.add(lesson)
     db.session.commit()
 
     return 0  # all right
+
 
 if __name__ == '__main__':
     # dt = datetime(year=2024, month=2, day=1)

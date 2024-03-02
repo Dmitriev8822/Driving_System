@@ -1,54 +1,75 @@
+var monthArray = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
 var today = new Date();
 var years = today.getFullYear();
 window.number = String(today.getMonth() + 1).padStart(2, '0') - 1;
 var firstSelect = -1;
 var getTime = true;
-var StatusData = document.getElementsByClassName("column");
-var WeekDays = document.getElementsByClassName("date");
+var StatusData = document.getElementsByClassName("colum");
+var WeekDays = document.getElementsByClassName("0");
 
-
+function image(num){
+    if(num == 1){
+        if(number == monthArray.length - 1)
+        {
+            number = -1;
+            years++;
+            document.getElementById('month').innerHTML = monthArray[number] + '<label>' + years + '</label>';
+        }
+        if(number < monthArray.length - 1){
+            number++;
+            document.getElementById('month').innerHTML = monthArray[number] + '<label>' + years + '</label>';
+        }
+    }
+    else{
+        if(number == 0)
+        {
+            number = 11;
+            years--;
+            document.getElementById('month').innerHTML = monthArray[number] + '<label>' + years + '</label>';
+        }
+        else{
+            number--;
+            document.getElementById('month').innerHTML = monthArray[number] + '<label>' + years + '</label>';
+        }
+    }
+}
+document.write('<div id="month" class="month__inner">' + monthArray[number] + '<label>' + years + '</label>' + '</div>');
 function ButtonClick(n){
-    var num_active = $(n).index(".column") + 1; // Номер элемента
+    var num_active = $(n).index(".colum") + 1; // Номер элемента
+    console.log(num_active);
     if(n.id == 'selected'){
         for (var i = 0; i < StatusData.length; i++) {
             if(StatusData[i].id == 'selected')
             {
-                StatusData[i].id = 'free';
+                StatusData[i].id = 'open';
             }
         }
         firstSelect = num_active;
-        document.getElementById('workTime1').innerHTML = n.innerHTML;
-        document.getElementById('workTime2').innerHTML = "....";
         document.getElementsByName('workTime1')[0].value = n.innerHTML;
         document.getElementsByName('workTime2')[0].value = "....";
         getTime = true;
         n.id = 'selected';
         return;
     }
-    else if(n.id == 'free')
+    else if(n.id != 'red')
     {
         n.id = 'selected';
         if(firstSelect == -1 && getTime) { // Выбрана ли первая граница
             firstSelect = num_active;
-            document.getElementById('workTime1').innerHTML = n.innerHTML;
             document.getElementsByName('workTime1')[0].value = n.innerHTML;
-
-            document.getElementsByName('workTime1')[0].value = n.innerHTML;
-               document.getElementsByName('workTime2')[0].value = "....";
         }
         else {
-            console.log(num_active, num_active / 30, firstSelect, firstSelect / 30, !getTime)
-            if((parseInt(num_active / 30) - parseInt(firstSelect / 30) != 0) || !getTime || num_active - firstSelect <= 0) { // Одна строка
-                console.log("We are in!")
+            if((parseInt(num_active / 28) - parseInt(firstSelect / 28) != 0) || !getTime || num_active - firstSelect <= 0) { // Одна строка
                 firstSelect = num_active;
                 for (var i = 0; i < StatusData.length; i++) {
                     if(StatusData[i].id == 'selected')
                     {
-                        StatusData[i].id = 'free';
+                        StatusData[i].id = 'open';
                     }
                 }
-                document.getElementById('workTime1').innerHTML = n.innerHTML;
-                document.getElementById('workTime2').innerHTML = "....";
+                document.getElementsByName('workTime1')[0].value = n.innerHTML;
+                document.getElementsByName('workTime2')[0].value = "....";
+                document.getElementsByName('data')[0].value = "...."
                 getTime = true;
                 n.id = 'selected';
                 return;
@@ -57,32 +78,28 @@ function ButtonClick(n){
             {
                 console.log("Incorrect");
                 alert("Минимальное время записи 1 час");
-                n.id = 'free';
+                n.id = 'open';
             }
             else if(num_active - firstSelect <= 3) { // Проверка границ
                 console.log("Correct");
                 for(var i = firstSelect - 1; i < num_active; i++)
-                    if(StatusData[i].id == 'busy')
+                    if(StatusData[i].id == 'red')
                     {
-                        StatusData[num_active - 1].id = 'free';
+                        StatusData[num_active - 1].id = 'open';
                         alert("Ваше время пересекается с чужим");
                         return;
                     }
                 for(var i = firstSelect - 1; i < num_active; i++)
                     StatusData[i].id = 'selected';
-
-                console.log(num_active)
-                document.getElementById('lesson_date').innerHTML = WeekDays[parseInt(num_active / 30)].id;
-                document.getElementsByName('lesson_date')[0].value = WeekDays[parseInt(num_active / 30)].id;
+                document.getElementsByName('data')[0].value = WeekDays[parseInt(num_active / 28)].id;
                 firstSelect = -1;
                 getTime = false;
-                document.getElementById('workTime2').innerHTML = n.innerHTML;
                 document.getElementsByName('workTime2')[0].value = n.innerHTML;
             }
             else {
                 console.log("Incorrect");
                 alert("Максимальное время записи 2 часа");
-                n.id = 'free';
+                n.id = 'open';
             }
         }
     }
