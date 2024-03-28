@@ -167,7 +167,10 @@ def get_instructors_info():
 
     results = []
     for instructor in instructors:
-        results.append([instructor.name + ' ' + instructor.father_name, instructor.description])
+        if instructor.name and instructor.father_name:
+            results.append([instructor.name + ' ' + instructor.father_name, instructor.description])
+        else:
+            results.append(None)
 
     return results
 

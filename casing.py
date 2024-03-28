@@ -15,6 +15,13 @@ app.config['SESSION_COOKIE_SECURE'] = True
 path_to_profile_images = os.path.join('static', 'data', 'profile')
 path_to_cars_images = os.path.join('static', 'data', 'cars')
 
+MY_DEBUG = True
+
+
+def debug_out(message):
+    if MY_DEBUG:
+        print(message)
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -35,7 +42,7 @@ def logout():
 @app.route('/register/student', methods=['GET', 'POST'])
 def register_student():
     if current_user.is_authenticated:
-        return redirect('/account/student')
+        return redirect('/account')
 
     if request.method == 'POST':
         # получаем данные и записываем в базу данных
@@ -62,6 +69,9 @@ def register_student():
 
 @app.route('/register/instructor', methods=['GET', 'POST'])
 def register_instructor():
+    if current_user.is_authenticated:
+        return redirect('/account')
+
     if request.method == 'POST':
         # получаем данные и записываем в базу данных
         number = request.form.get('telnum')
@@ -72,7 +82,7 @@ def register_instructor():
             if password == password_v:
                 res = user_registration(login=number, password=password, user_type='instructor')
                 if res == 0:
-                    return redirect('/account/instructor')
+                    return redirect('/authorization')
                 else:
                     flash('User is already registered')
             else:
@@ -127,6 +137,7 @@ def account():
 
 
 def is_profile_image(user_id, change=False, path=False, round_image=False):
+    debug_out("Function 'is_profile_image' was called")
     user_id = str(user_id)
     files = os.listdir(path_to_profile_images)
     for file in files:
@@ -140,12 +151,12 @@ def is_profile_image(user_id, change=False, path=False, round_image=False):
                     return os.path.join(path_to_profile_images, user_id + 'r.' + file.split('.')[-1])
                 else:
                     return os.path.join(path_to_profile_images, file)
-
             return True
     return False
 
 
 def format_profile_photo(file):
+    debug_out("Function 'format_profile_photo' was called")
     path_to_file = os.path.join(path_to_profile_images, file)
     image = Image.open(path_to_file)
     resized_image = image.resize((200, 200))
@@ -169,59 +180,22 @@ def format_car_photo(file):
     image = Image.open(path_to_file)
     resized_image = image.resize((640, 400))
     os.remove(path_to_file)
-    path_to_file = os.path.join(path_to_cars_images, file.split('.')[0] + '.' + 'jpg')
+    path_to_file = os.path.join(path_to_cars_images, file.split('.')[0] + '.' + 'png')
     resized_image.save(path_to_file)
-
-
-@app.route('/account/student_old', methods=['GET', 'POST'])
-@login_required
-def student_account_old():
-    if request.method == 'POST':
-        fio = request.form.get('fio')
-        description = request.form.get('description')
-        photo = request.files.get('photo')
-        # print(f'fio = {fio}; fio_issp = {fio.isspace()}; fio_spl = {fio.split()}.')
-        if fio and not fio.isspace() and len(fio.split()) == 3:
-            second_name, name, father_name = fio.split()
-            update_user_info(str(current_user.id), name=name, second_name=second_name, father_name=father_name)
-        else:
-            # вывод сообщения о некорректном вводе фио
-            print('error')
-
-        update_user_info(str(current_user.id), description=description)
-
-        if photo is not None and photo.filename != '':
-            is_profile_image(current_user.id, change=True)
-
-            extension = photo.filename.rsplit('.')[-1].lower()
-            photo.filename = f'{str(current_user.id)}.{extension}'
-            photo.save(path_to_profile_images + photo.filename)
-
-            format_profile_photo(photo.filename)
-
-    name = current_user.name if current_user.name is not None else ''
-    user_id = str(current_user.id)
-    fio = ' '.join([current_user.second_name, current_user.name,
-                    current_user.father_name]) if current_user.name is not None else ''
-    description = current_user.description if current_user.description is not None else ''
-    main_photo = '../' + path_to_profile_images + \
-                 [name if user_id in name else '' for name in os.listdir(path_to_profile_images)][
-                     0] if current_user.is_authenticated and is_profile_image(
-        str(current_user.id)) else '../static/img/photo_test.png'
-
-    return render_template('student_account.html', fio=fio, description=description, name=name, user_id=user_id,
-                           main_photo=main_photo)
 
 
 @app.route('/account/instructor', methods=['GET', 'POST'])
 @login_required
 def instructor_account():
+    debug_out("Function 'instructor_account' was called")
     if request.method == 'POST':
         fio = request.form.get('fio')
         description = request.form.get('description')
         car_model = request.form.get('car_model')
         photo = request.files.get('photo')
         photo_car = request.files.get('photo_car')
+        debug_out(
+            f"Data was received:\n(\nfio = {fio},\ndescription = {description},\ncar_model = {car_model},\nphoto = {photo}.\nphoto_car={photo_car}\n)")
 
         if fio and not fio.isspace() and len(fio.split()) == 3:
             second_name, name, father_name = fio.split()
@@ -245,7 +219,7 @@ def instructor_account():
             photo_car.save(os.path.join(path_to_cars_images, photo_car.filename))
             format_car_photo(photo_car.filename)
 
-    fio = ' '.join([current_user.name, current_user.second_name,
+    fio = ' '.join([current_user.second_name, current_user.name,
                     current_user.father_name]) if current_user.name is not None and current_user.second_name is not None and current_user.father_name is not None else ''
 
     user_id = str(current_user.id)
@@ -267,11 +241,12 @@ def instructor_account():
 @app.route('/account/student', methods=['GET', 'POST'])
 @login_required
 def student_account():
+    debug_out("Function 'student_account' was called")
     if request.method == 'POST':
         fio = request.form.get('fio')
         description = request.form.get('description')
         photo = request.files.get('photo')
-        # print(f'fio = {fio}; fio_issp = {fio.isspace()}; fio_spl = {fio.split()}.')
+        debug_out(f"Data was received:\n(\nfio = {fio},\ndescription = {description},\nphoto = {photo}.\n)")
         if fio and not fio.isspace() and len(fio.split()) == 3:
             second_name, name, father_name = fio.split()
             update_user_info(str(current_user.id), name=name, second_name=second_name, father_name=father_name)
@@ -285,7 +260,7 @@ def student_account():
             is_profile_image(current_user.id, change=True)
 
             photo.filename = f'{str(current_user.id)}.png'
-            photo.save(os.path.join(path_to_cars_images, photo.filename))
+            photo.save(os.path.join(path_to_profile_images, photo.filename))
 
             format_profile_photo(photo.filename)
 

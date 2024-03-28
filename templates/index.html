@@ -45,20 +45,6 @@
                             </div>
                         {% endif %}
     				</div>
-                    <script>
-                        document.getElementById("myImage").addEventListener("click", function() {
-                         var menu = document.getElementById("myMenu");
-                         if (menu.style.display === "none") {
-                           menu.style.display = "block";
-                         } else {
-                            menu.style.display = "none";
-                          }
-                        });
-
-                        //document.getElementById("myMenu").addEventListener("click", function(e) {
-                        //  e.stopPropagation(); // Предотвращаем всплытие события, чтобы меню не скрылось при клике на само меню
-                        //});
-                    </script>
     			</div>
     		</div>
     	</div>
@@ -70,8 +56,12 @@
                     <h1 class="intro__title">систематизация обучения водителей</h1>
                     <h2 class="intro__subtitle">С ПОМОЩЬЮ СЕРВИСА ЛЮБОЙ ЧЕЛОВЕК МОЖЕТ ОБУЧИТЬ ДРУГОГО ВОЖДЕНИЮ ИЛИ САМОСТОЯТЕЛЬНО ПОВЫСИТЬ УРОВЕНЬ ВОЖДЕНИЯ</h2>
                     <div class="button">
-                        <a href="swap"><button class="button__reg" >Начать регистрацию</button></a>
-                        <a href="authorization"><button class="button__log">Я зарегестрирован</button></a>
+                        <div id="registration" style="width: 256px; height: 56px; display: flex; align-items: center; justify-content: space-between;">
+                            <button onclick="func()" id="registration1" class="button__reg">Начать регистрацию</button>
+                        </div>
+                        <div>
+                            <a href="authorization"><button class="button__log">Я зарегестрирован</button></a>
+                        </div>
                     </div>
                 </div>
             </div>
